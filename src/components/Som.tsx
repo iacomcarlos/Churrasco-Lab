@@ -4,7 +4,7 @@ import { Volume2, VolumeX } from "lucide-react";
 import { track } from "@/lib/analytics";
 
 const CHAVE = "churrascolab:som:v1";
-const VOLUME = 0.14; // baixo e discreto
+const VOLUME = 0.2; // 20%, baixo e discreto
 
 /**
  * Som ambiente de brasa crepitando, bem baixo, em repetição.
@@ -46,7 +46,7 @@ export function Som() {
           setTocando(true);
           window.clearInterval(subida);
           subida = window.setInterval(() => {
-            a.volume = Math.min(VOLUME, a.volume + 0.01);
+            a.volume = Math.min(VOLUME, a.volume + 0.02);
             if (a.volume >= VOLUME) window.clearInterval(subida);
           }, 90);
           return true;

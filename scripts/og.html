@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<title>Prévia de compartilhamento</title>
+<!-- Gera public/og.png (1200×630): a imagem que aparece ao compartilhar o link no WhatsApp.
+     Rode: bash ~/.claude/skills/site-imersivo/scripts/gerar-imagens.sh <pasta-do-projeto> -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;800;900&family=Yellowtail&display=block" />
+<style>
+  * { margin: 0; box-sizing: border-box; }
+  html, body { width: 1200px; height: 630px; overflow: hidden; }
+  body { position: relative; background: #100a07 url(../materiais/arte-principal.webp) left 46% / 1200px auto no-repeat; color: #f7f1e9; font-family: "Montserrat", sans-serif; }
+  .sombra { position: absolute; inset: 0; background: linear-gradient(90deg, transparent 45%, rgba(16,10,7,.55) 62%, rgba(16,10,7,.72) 100%); }
+  .txt { position: absolute; left: 668px; top: 64px; width: 480px; text-align: center; display: flex; flex-direction: column; align-items: center; }
+  .script { font-family: "Yellowtail", cursive; font-size: 64px; line-height: 1.1; background: linear-gradient(100deg, #ffd45e, #ffab33 45%, #f47a12); -webkit-background-clip: text; background-clip: text; color: transparent; padding: 0 8px 6px; }
+  .data { margin-top: 4px; font-weight: 900; font-size: 116px; line-height: .95; letter-spacing: -.02em; text-transform: uppercase; }
+  .mes { margin-top: 10px; font-weight: 500; font-size: 30px; letter-spacing: .32em; text-transform: uppercase; }
+  .local { margin-top: 24px; border: 2px solid rgba(244,122,18,.85); border-radius: 999px; padding: 10px 28px; font-weight: 600; font-size: 27px; background: rgba(16,10,7,.6); }
+  .gratis { margin-top: 20px; background: linear-gradient(180deg, #ffb84a, #ff9a22 48%, #f47a12); color: #2a1305; border-radius: 999px; padding: 13px 38px; font-weight: 800; font-size: 31px; letter-spacing: .04em; text-transform: uppercase; box-shadow: 0 12px 34px -10px rgba(244,122,18,.8); }
+</style>
+</head>
+<body>
+  <div class="sombra"></div>
+  <div class="txt">
+    <div class="script">Anota aí!</div>
+    <div class="data">27 e 28</div>
+    <div class="mes">de novembro</div>
+    <div class="local">Praça da Bíblia · Ceilândia</div>
+    <div class="gratis">Entrada gratuita</div>
+  </div>
+</body>
+</html>

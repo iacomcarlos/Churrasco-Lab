@@ -1,0 +1,14 @@
+# dependências e builds (a Vercel instala e gera tudo sozinha)
+node_modules
+.next
+out
+*.tsbuildinfo
+next-env.d.ts
+
+# variáveis de ambiente (os IDs de analytics vão no painel da Vercel)
+.env
+.env*.local
+
+# Vercel / sistema
+.vercel
+.DS_Store

@@ -1,0 +1,107 @@
+"use client";
+/* eslint-disable @next/next/no-img-element */
+import { useRef, useState } from "react";
+import { CalendarDays, MapPin, Navigation, Share2, Ticket } from "lucide-react";
+import { evento, links } from "@/config/evento";
+import { TituloSecao } from "@/components/Pecas";
+import { LogoAnimada } from "@/components/LogoAnimada";
+import { useRevelar } from "@/lib/revelar";
+import { compartilhar } from "@/lib/share";
+import { track } from "@/lib/analytics";
+
+/** LOCAL: onde, quando e o botão de rota. Sem número, CEP ou estacionamento inventado. */
+export function Local() {
+  const root = useRef<HTMLElement>(null);
+  const [mapa, setMapa] = useState(false);
+  useRevelar(root);
+  return (
+    <section id="local" ref={root} className="relative bg-fundo-2 px-5 py-20 sm:py-24">
+      <TituloSecao frase="Te esperamos" titulo={evento.local.nome} apoio={`${evento.local.bairro} · ${evento.local.uf}`} />
+
+      <ul data-rev className="mx-auto mt-8 flex max-w-[560px] flex-wrap items-center justify-center gap-2.5">
+        <li className="inline-flex items-center gap-2.5 rounded-full border-[1.5px] border-brasa/75 px-5 py-2.5 text-[15.5px] font-semibold">
+          <CalendarDays className="size-5 text-brasa" strokeWidth={1.8} aria-hidden />
+          {evento.datasTexto}
+        </li>
+        <li className="inline-flex items-center gap-2.5 rounded-full border-[1.5px] border-brasa/75 px-5 py-2.5 text-[15.5px] font-semibold">
+          <Ticket className="size-5 text-brasa" strokeWidth={1.8} aria-hidden />
+          {evento.entrada}
+        </li>
+      </ul>
+
+      {/* mapa: só carrega quando a pessoa pede (página leve) */}
+      <div data-rev className="cartao relative mx-auto mt-8 aspect-[4/3] max-w-[720px] overflow-hidden sm:aspect-[16/9]">
+        {mapa ? (
+          <iframe title={`Mapa: ${evento.local.buscaMapa}`} src={links.mapaEmbed} loading="lazy" referrerPolicy="no-referrer-when-downgrade" className="absolute inset-0 size-full border-0" allowFullScreen />
+        ) : (
+          <button
+            type="button"
+            onClick={() => {
+              setMapa(true);
+              track("mapa_abrir", {});
+            }}
+            className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-[radial-gradient(70%_70%_at_50%_45%,rgb(196_62_12/0.28),transparent)]"
+          >
+            <span className="relative grid size-[68px] place-items-center rounded-full bg-brasa text-tinta" style={{ animation: "pulso 2.2s ease-out infinite" }}>
+              <MapPin className="size-8" strokeWidth={2.2} aria-hidden />
+            </span>
+            <span className="rounded-full border-[1.5px] border-brasa/75 px-5 py-2 text-[14px] font-bold tracking-[0.12em] uppercase">Ver no mapa</span>
+          </button>
+        )}
+      </div>
+
+      <div data-rev className="mx-auto mt-6 grid max-w-[720px] gap-2.5 sm:grid-cols-2">
+        <a href={links.comoChegar} target="_blank" rel="noopener noreferrer" onClick={() => track("mapa_click", { local: "local" })} className="btn btn-brasa">
+          <Navigation className="size-5" strokeWidth={2.4} aria-hidden />
+          Como chegar
+        </a>
+        <button type="button" onClick={() => compartilhar("local")} className="btn btn-linha">
+          <Share2 className="size-5" aria-hidden />
+          Compartilhar
+        </button>
+      </div>
+    </section>
+  );
+}
+
+/**
+ * Rodapé como a base do flyer: a carne na grelha ao fundo e a régua de marcas num cartão claro
+ * (realização à esquerda, parceria à direita).
+ */
+export function Rodape() {
+  return (
+    <footer id="rodape" className="relative isolate overflow-hidden bg-fundo pt-16 text-center">
+      {/* carne na grelha: um recorte para celular e outro para telas largas */}
+      <div
+        aria-hidden
+        className="absolute inset-x-0 bottom-0 -z-10 h-[540px] bg-cover bg-[position:58%_bottom] sm:hidden"
+        style={{ backgroundImage: "url(/fotos/grelha-carne-celular.webp)", maskImage: "linear-gradient(to top, #000 62%, transparent)", WebkitMaskImage: "linear-gradient(to top, #000 62%, transparent)" }}
+      />
+      <div
+        aria-hidden
+        className="absolute inset-x-0 bottom-0 -z-10 hidden h-[300px] bg-cover bg-[position:center_bottom] sm:block"
+        style={{ backgroundImage: "url(/fotos/grelha-carne.webp)", maskImage: "linear-gradient(to top, #000 55%, transparent)", WebkitMaskImage: "linear-gradient(to top, #000 55%, transparent)" }}
+      />
+      <div className="mx-auto flex max-w-[680px] flex-col items-center px-5">
+        <LogoAnimada className="w-[210px] sm:w-[240px]" />
+        <p className="titulo mt-2 text-[clamp(24px,7vw,32px)]">
+          27 e 28 <span className="text-ambar">de novembro</span>
+        </p>
+        <p className="mt-2 text-[15.5px] font-semibold text-suave">
+          {evento.local.nome} · {evento.local.bairro}
+        </p>
+        <p className="espacado mt-2 text-[12.5px] font-semibold text-ambar">{evento.entrada}</p>
+
+        {/* régua de marcas, como no flyer: realização à esquerda, parceria à direita */}
+        <div className="mt-[250px] flex w-full max-w-[640px] flex-col items-center justify-center gap-x-3 rounded-[20px] bg-[#f5ede7] px-4 py-2 shadow-[0_18px_50px_-18px_rgb(0_0_0/0.8)] min-[520px]:flex-row sm:mt-[110px]">
+          <img src="/brand/regua-realizacao.png" width={318} height={115} loading="lazy" alt={`Realização: ${evento.realizacao.nome}`} className="h-auto w-full max-w-[250px]" />
+          <span aria-hidden className="h-px w-4/5 bg-tinta/25 min-[520px]:h-14 min-[520px]:w-px" />
+          <img src="/brand/regua-parceria.png" width={406} height={115} loading="lazy" alt={`Parceria: ${evento.parceria.nome}`} className="h-auto w-full max-w-[320px]" />
+        </div>
+        <p className="pb-safe mt-5 pb-5 text-[12px] font-medium text-texto/80 [text-shadow:0_1px_8px_rgb(0_0_0/0.9)]">
+          © {evento.ano} {evento.nomeCurto}
+        </p>
+      </div>
+    </footer>
+  );
+}

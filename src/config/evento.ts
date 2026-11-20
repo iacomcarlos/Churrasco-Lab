@@ -1,0 +1,199 @@
+/**
+ * CHURRASCO LAB BRASÍLIA 2026 · conteúdo oficial do site.
+ * Tudo o que aparece na página sai deste arquivo: datas, local, programação,
+ * profissionais e textos. Para atualizar, edite aqui e gere o site de novo.
+ *
+ * Regra: só informação confirmada pela organização. Campo sem dado fica vazio
+ * e a interface esconde o elemento.
+ */
+
+/** Endereço oficial do site (domínio comprado pela organização). */
+export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://churrascolabbsb.com.br").replace(/\/$/, "");
+
+export const evento = {
+  nome: "Churrasco LAB Brasília 2026",
+  nomeCurto: "Churrasco LAB Brasília",
+  conceito: "Do fogo ao negócio",
+  datasTexto: "27 e 28 de novembro",
+  datasCurtas: "27 e 28 de nov",
+  ano: 2026,
+  inicio: "2026-11-27",
+  fim: "2026-11-28",
+  entrada: "Entrada gratuita",
+  local: {
+    nome: "Praça da Bíblia",
+    bairro: "Ceilândia",
+    uf: "Distrito Federal",
+    ufSigla: "DF",
+    /** Texto usado na busca do aplicativo de mapas (sem número, CEP ou complemento inventado). */
+    buscaMapa: "Praça da Bíblia, Ceilândia, Brasília - DF",
+  },
+  titulo: "Churrasco LAB Brasília 2026 | 27 e 28 de Novembro",
+  descricao:
+    "O Churrasco LAB Brasília acontece nos dias 27 e 28 de novembro, na Praça da Bíblia, em Ceilândia. Entrada gratuita. Confira a programação das aulas-show.",
+  realizacao: { nome: "Instituto Poder Social", sigla: "IPS", logo: "/brand/ips.png", largura: 330, altura: 150 },
+  parceria: {
+    nome: "Secretaria de Desenvolvimento Econômico, Trabalho e Renda · Governo do Distrito Federal",
+    logo: "/brand/sedet-gdf.png",
+    largura: 500,
+    altura: 140,
+  },
+} as const;
+
+/* ───────────────── Profissionais ───────────────── */
+
+export type Profissional = {
+  id: string;
+  /** Nome como aparece na programação oficial. */
+  nome: string;
+  /** Identificação associada (entre parênteses na programação). */
+  marca?: string;
+  /** Nome completo, quando informado no material enviado pelo próprio profissional. */
+  nomeCompleto?: string;
+  /** Foto oficial enviada pela organização (sem foto, o card é tipográfico). */
+  foto?: string;
+  fotoMini?: string;
+  /** Ponto de foco da foto no recorte (CSS object-position). */
+  foco?: string;
+  /** Resumo extraído do currículo enviado. Sem currículo, fica vazio. */
+  bio?: string[];
+};
+
+export const profissionais: Profissional[] = [
+  { id: "jose", nome: "José", marca: "Molotov" },
+  {
+    id: "jonathan",
+    nome: "Jonathan",
+    marca: "Alecrim",
+    nomeCompleto: "Jonathan Nobre",
+    foto: "/profissionais/jonathan.webp",
+    fotoMini: "/profissionais/jonathan-mini.webp",
+    foco: "50% 18%",
+    bio: [
+      "Chef, empreendedor e gestor de restaurantes, com mais de 8 anos de experiência no Brasil e nos Estados Unidos.",
+      "Fundador do Alecrim Smokehouse, em Brasília. Especialista em American BBQ, churrasco brasileiro e parrilla argentina, com experiência em gestão, desenvolvimento de negócios, controle de custos e liderança de equipes.",
+    ],
+  },
+  {
+    id: "jefferson",
+    nome: "Jefferson",
+    marca: "Braseiro 61",
+    nomeCompleto: "Jefferson Faustino",
+    foto: "/profissionais/jefferson.webp",
+    fotoMini: "/profissionais/jefferson-mini.webp",
+    foco: "50% 22%",
+    bio: [
+      "À frente do Braseiro61, une o domínio do fogo, a técnica do churrasco e a valorização das raízes da comida caipira.",
+      "Em Brasília, atua também como churrasqueiro e mentor, formando novos profissionais em experiências práticas, workshops e vivências à beira do fogo.",
+    ],
+  },
+  {
+    id: "gabrielle",
+    nome: "Gabrielle",
+    marca: "Rusticano",
+    foto: "/profissionais/gabrielle.webp",
+    fotoMini: "/profissionais/gabrielle-mini.webp",
+    foco: "50% 20%",
+    bio: [
+      "Formada em Administração de Empresas, decidiu empreender junto com o esposo e construir a própria hamburgueria do zero, mesmo sem recursos e sem experiência no ramo.",
+      "Responsável pela administração do negócio, ajudou a estruturar, organizar e fazer crescer a empresa, que está em funcionamento há sete anos.",
+    ],
+  },
+  {
+    id: "pedro",
+    nome: "Pedro",
+    marca: "061 bbq",
+    nomeCompleto: "Pedro Henrique",
+    foto: "/profissionais/pedro.webp",
+    fotoMini: "/profissionais/pedro-mini.webp",
+    foco: "50% 20%",
+    bio: [
+      "Formado em Administração de Empresas, começou na cozinha em 2015. Em 2018 conheceu o American Barbecue, aprofundou os estudos e, no fim daquele ano, fundou o 061bbq junto com a esposa.",
+      "Hoje tem um ponto de vendas de rua em Águas Claras, é sócio proprietário da unidade de Vicente Pires e participa de grandes eventos e serviços de buffet.",
+    ],
+  },
+  {
+    id: "andrey",
+    nome: "Andrey Angelim",
+    foto: "/profissionais/andrey.webp",
+    fotoMini: "/profissionais/andrey-mini.webp",
+    foco: "50% 18%",
+    bio: [
+      "Cozinheiro e chef de cozinha formado pelo IESB, em Brasília. São 10 anos de cozinha profissional, sempre com a carne no centro: churrasco, parrilla e cozinha de fogo.",
+      "Desde 2021 está à frente da cozinha da Fazenda Churrascada Brasília. Também se dedica ao ensino, com aulas para iniciantes e profissionais, e à consultoria para restaurantes.",
+    ],
+  },
+];
+
+export const profissionalPorId = (id: string) => profissionais.find((p) => p.id === id)!;
+
+/** "José (Molotov)", "Andrey Angelim" ... exatamente como na programação oficial. */
+export const nomeNaProgramacao = (p: Profissional) => (p.marca ? `${p.nome} (${p.marca})` : p.nome);
+
+/* ───────────────── Programação oficial das aulas-show ───────────────── */
+
+export type Dia = { id: string; data: string; rotulo: string; semana: string; semanaCurta: string; diaMes: string };
+
+export const dias: Dia[] = [
+  { id: "sexta", data: "2026-11-27", rotulo: "27 NOV", semana: "Sexta-feira", semanaCurta: "Sexta", diaMes: "27/11" },
+  { id: "sabado", data: "2026-11-28", rotulo: "28 NOV", semana: "Sábado", semanaCurta: "Sábado", diaMes: "28/11" },
+];
+
+export type Aula = {
+  id: string;
+  numero: number;
+  /** Data no formato AAAA-MM-DD (horário de Brasília). */
+  data: string;
+  /** Horários no formato HH:MM (horário de Brasília). */
+  inicio: string;
+  fim: string;
+  tema: string;
+  profissional: string;
+  /** Link de inscrição específico da aula, se um dia existir. Vazio = usa a inscrição geral do site. */
+  linkInscricao?: string;
+};
+
+export const aulas: Aula[] = [
+  { id: "burger", numero: 1, data: "2026-11-27", inicio: "18:30", fim: "19:45", tema: "Burger", profissional: "jose" },
+  { id: "tendencias", numero: 2, data: "2026-11-27", inicio: "20:00", fim: "21:15", tema: "Tendências do mercado", profissional: "jonathan" },
+  { id: "fogo-de-chao", numero: 3, data: "2026-11-28", inicio: "12:30", fim: "13:45", tema: "Fogo de chão", profissional: "jefferson" },
+  { id: "empreendedorismo", numero: 4, data: "2026-11-28", inicio: "14:15", fim: "15:30", tema: "Empreendedorismo na gastronomia", profissional: "gabrielle" },
+  { id: "defumacao", numero: 5, data: "2026-11-28", inicio: "16:00", fim: "17:15", tema: "Defumação", profissional: "pedro" },
+  { id: "tecnicas-de-grelha", numero: 6, data: "2026-11-28", inicio: "17:45", fim: "19:00", tema: "Técnicas de grelha", profissional: "andrey" },
+];
+
+export const aulasDoDia = (data: string) => aulas.filter((a) => a.data === data);
+export const aulaDoProfissional = (id: string) => aulas.find((a) => a.profissional === id);
+export const diaDaAula = (a: Aula) => dias.find((d) => d.data === a.data)!;
+export const dois = (n: number) => String(n).padStart(2, "0");
+/** "18:30" → "18h30" */
+export const hora = (h: string) => h.replace(":", "h");
+
+/* ───────────────── Navegação e links ───────────────── */
+
+export const menu = [
+  { id: "aulas", texto: "Aulas-show" },
+  { id: "local", texto: "Local" },
+] as const;
+
+const q = encodeURIComponent(evento.local.buscaMapa);
+export const links = {
+  /** Abre o aplicativo de mapas com a rota até a praça. */
+  comoChegar: `https://www.google.com/maps/dir/?api=1&destination=${q}`,
+  mapaEmbed: `https://www.google.com/maps?q=${q}&z=16&output=embed`,
+};
+
+/* ───────────────── Textos (curtos, para entender sem precisar ler muito) ───────────────── */
+
+export const textos = {
+  evento: {
+    frase: "Aprenda com quem vive da brasa.",
+    pilares: [
+      { id: "brasa", titulo: "A brasa", texto: "Fogo, carne e técnica na prática." },
+      { id: "escola", titulo: "A escola", texto: "Conhecimento que vira profissão e renda." },
+    ],
+  },
+  privacidade: "Ao se inscrever, você autoriza a organização do evento a usar seus dados para registrar a inscrição e enviar avisos.",
+  compartilhar: () =>
+    `Churrasco LAB Brasília 2026 🔥\n27 e 28 de novembro, na Praça da Bíblia, em Ceilândia.\nEntrada gratuita, com aulas-show.\nInscreva-se: ${SITE_URL}`,
+};

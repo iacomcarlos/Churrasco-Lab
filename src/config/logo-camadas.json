@@ -1,0 +1,110 @@
+{
+  "fogo": {
+    "src": "/brand/logo/fogo.webp",
+    "x": 3.9063,
+    "y": 2.1484,
+    "w": 92.2852,
+    "h": 82.8125,
+    "largura": 945,
+    "altura": 848
+  },
+  "vapor-esq": {
+    "src": "/brand/logo/vapor-esq.webp",
+    "x": 38.5742,
+    "y": 15.0391,
+    "w": 7.7148,
+    "h": 17.3828,
+    "largura": 79,
+    "altura": 178
+  },
+  "vapor-centro": {
+    "src": "/brand/logo/vapor-centro.webp",
+    "x": 44.2383,
+    "y": 1.2695,
+    "w": 10.1563,
+    "h": 30.957,
+    "largura": 104,
+    "altura": 317
+  },
+  "vapor-dir": {
+    "src": "/brand/logo/vapor-dir.webp",
+    "x": 53.8086,
+    "y": 13.8672,
+    "w": 7.7148,
+    "h": 18.5547,
+    "largura": 79,
+    "altura": 190
+  },
+  "churrasco": {
+    "src": "/brand/logo/churrasco.webp",
+    "x": 2.6367,
+    "y": 31.6406,
+    "w": 94.3359,
+    "h": 36.1328,
+    "largura": 966,
+    "altura": 370
+  },
+  "lab": {
+    "src": "/brand/logo/lab.webp",
+    "x": 31.6406,
+    "y": 60.8398,
+    "w": 35.9375,
+    "h": 24.0234,
+    "largura": 368,
+    "altura": 246
+  },
+  "faca-esq": {
+    "src": "/brand/logo/faca-esq.webp",
+    "x": 7.0313,
+    "y": 63.7695,
+    "w": 28.418,
+    "h": 22.168,
+    "largura": 291,
+    "altura": 227
+  },
+  "faca-dir": {
+    "src": "/brand/logo/faca-dir.webp",
+    "x": 65.8203,
+    "y": 63.7695,
+    "w": 25.9766,
+    "h": 22.168,
+    "largura": 266,
+    "altura": 227
+  },
+  "brasilia": {
+    "src": "/brand/logo/brasilia.webp",
+    "x": 24.3164,
+    "y": 85.1563,
+    "w": 49.5117,
+    "h": 11.5234,
+    "largura": 507,
+    "altura": 118
+  },
+  "ponto-esq": {
+    "src": "/brand/logo/ponto-esq.webp",
+    "x": 18.6523,
+    "y": 83.9844,
+    "w": 5.2734,
+    "h": 5.1758,
+    "largura": 54,
+    "altura": 53
+  },
+  "ponto-dir": {
+    "src": "/brand/logo/ponto-dir.webp",
+    "x": 73.3398,
+    "y": 84.082,
+    "w": 5.3711,
+    "h": 5.1758,
+    "largura": 55,
+    "altura": 53
+  },
+  "brilho": {
+    "src": "/brand/logo/brilho.webp",
+    "x": 0,
+    "y": 0,
+    "w": 100,
+    "h": 100,
+    "largura": 256,
+    "altura": 256
+  }
+}

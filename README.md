@@ -45,6 +45,7 @@ where login = 'admin';
 
 ## Créditos de mídia
 
+- Som ambiente de brasa: Mixkit, "Campfire crackles" (sfx 1330), Mixkit Sound Effects Free License. Volume e comportamento em `src/components/Som.tsx`.
 - Vídeo de brasas da abertura: Mixkit, "Embers glowing and flames" (id 7090), Mixkit Stock Video Free License.
 - Logo animada: camadas oficiais da pasta "LOGO PARA ANIMAR" (fogo, vapores, palavras, facas e pontos), reduzidas e aparadas só na borda transparente. Tudo é animado no lugar, sem deslocar peças.
 - Carne na grelha e régua de marcas: recortes das artes oficiais guardadas em `materiais/`.

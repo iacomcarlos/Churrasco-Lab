@@ -47,7 +47,8 @@ export default function Page() {
         Pular para as aulas-show
       </a>
       <Topo />
-      <main>
+      <Faiscas />
+      <main className="relative z-[1]">
         <Abertura />
         <Evento />
         <Aulas />
@@ -55,7 +56,6 @@ export default function Page() {
         <Local />
       </main>
       <Rodape />
-      <Faiscas />
       <BotaoFixo />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd()) }} />
     </>

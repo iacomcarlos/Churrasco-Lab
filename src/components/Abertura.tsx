@@ -4,6 +4,7 @@ import { ArrowRight, CalendarDays, ChevronDown, MapPin } from "lucide-react";
 import { evento } from "@/config/evento";
 import { LogoBranca, Rabisco } from "@/components/Pecas";
 import { LogoAnimada } from "@/components/LogoAnimada";
+import { Som } from "@/components/Som";
 import { chamada, irPara } from "@/lib/nav";
 
 /** Cabeçalho mínimo: marca e o botão de inscrição. Ganha fundo ao rolar. */
@@ -30,16 +31,19 @@ export function Topo() {
         >
           <LogoBranca className="h-[42px] w-auto" />
         </a>
-        <a
-          href={`#${chamada.id}`}
-          onClick={(e) => {
-            e.preventDefault();
-            irPara(chamada.id, "topo");
-          }}
-          className="btn btn-brasa btn-sm !min-h-[42px]"
-        >
-          {chamada.curto}
-        </a>
+        <div className="flex items-center gap-2">
+          <Som />
+          <a
+            href={`#${chamada.id}`}
+            onClick={(e) => {
+              e.preventDefault();
+              irPara(chamada.id, "topo");
+            }}
+            className="btn btn-brasa btn-sm !min-h-[42px]"
+          >
+            {chamada.curto}
+          </a>
+        </div>
       </div>
     </header>
   );
@@ -121,7 +125,7 @@ export function Abertura() {
   }, []);
 
   return (
-    <section id="inicio" className="relative isolate flex min-h-[100svh] flex-col items-center overflow-hidden bg-fundo" aria-label={`${evento.nome}: ${evento.datasTexto}, ${evento.local.nome}, ${evento.local.bairro}. ${evento.entrada}.`}>
+    <section id="inicio" className="relative isolate flex min-h-[100svh] flex-col items-center overflow-hidden" aria-label={`${evento.nome}: ${evento.datasTexto}, ${evento.local.nome}, ${evento.local.bairro}. ${evento.entrada}.`}>
       {/* brasas reais, só na base */}
       <div
         aria-hidden

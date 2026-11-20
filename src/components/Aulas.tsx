@@ -112,7 +112,7 @@ export function Aulas() {
   let ordem = 0;
 
   return (
-    <section id="aulas" ref={root} className="relative bg-fundo-2 px-5 py-20 sm:py-24">
+    <section id="aulas" ref={root} className="relative bg-white/[0.022] px-5 py-20 sm:py-24">
       <TituloSecao frase="Bora aprender" titulo="Aulas-show" apoio={inscricaoAtiva ? <>Toque no <strong className="text-ambar">+</strong> para escolher as suas.</> : `${aulas.length} aulas em ${dias.length} dias. ${profissionais.length} profissionais.`} />
 
       <div className="mx-auto mt-10 max-w-[1040px] space-y-10">

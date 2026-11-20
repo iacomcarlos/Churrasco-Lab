@@ -16,7 +16,7 @@ export function Evento() {
   ];
   const icones = { brasa: Flame, escola: GraduationCap } as const;
   return (
-    <section id="evento" ref={root} className="relative bg-fundo px-5 py-20 sm:py-24">
+    <section id="evento" ref={root} className="relative px-5 py-20 sm:py-24">
       <TituloSecao frase={evento.conceito} titulo={textos.evento.frase} />
 
       <ul className="mx-auto mt-10 grid max-w-[640px] grid-cols-3 gap-2.5 sm:gap-4">

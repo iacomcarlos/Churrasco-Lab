@@ -1,7 +1,8 @@
 import type { CSSProperties } from "react";
 
 /**
- * Faíscas subindo por todo o site: uma camada fixa, leve e discreta, por cima do fundo.
+ * Faíscas subindo por todo o site: uma camada fixa, leve e discreta, que passa ATRÁS do conteúdo
+ * (textos, cartões, fotos e botões ficam sempre na frente).
  *
  * Feita só com CSS (transform e opacidade), sem JavaScript rodando a cada quadro, para não
  * pesar no celular. Não recebe toque nem clique, fica abaixo do cabeçalho e do botão fixo,
@@ -18,7 +19,7 @@ function semente(s: number) {
   };
 }
 
-const TOTAL = 80; // no celular aparecem só as 42 primeiras
+const TOTAL = 48; // no celular aparecem só as 26 primeiras
 const r = semente(2026);
 const FAISCAS = Array.from({ length: TOTAL }, (_, i) => {
   const tamanho = 2 + r() * 3.4;
@@ -42,7 +43,7 @@ export function Faiscas() {
   return (
     <div className="faiscas" aria-hidden>
       {FAISCAS.map((f) => (
-        <span key={f.i} className={`faisca ${f.i >= 42 ? "max-md:hidden" : ""}`} style={f.estilo}>
+        <span key={f.i} className={`faisca ${f.i >= 26 ? "max-md:hidden" : ""}`} style={f.estilo}>
           <i />
         </span>
       ))}

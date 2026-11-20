@@ -128,7 +128,7 @@ export function Inscricao() {
   const aulasFeitas = feito ? aulas.filter((a) => feito.aulas.includes(a.id)) : [];
 
   return (
-    <section id="inscricao" ref={root} className="relative overflow-hidden bg-fundo px-5 py-20 sm:py-24">
+    <section id="inscricao" ref={root} className="relative overflow-hidden px-5 py-20 sm:py-24">
       <div aria-hidden className="pointer-events-none absolute top-1/3 left-1/2 size-[min(140vw,900px)] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgb(196_62_12/0.2),transparent)]" />
       <div className="relative">
         <TituloSecao frase="Chega junto!" titulo="Inscrição gratuita" apoio={feito ? undefined : "Leva menos de um minuto."} />

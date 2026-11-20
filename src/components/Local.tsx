@@ -15,7 +15,7 @@ export function Local() {
   const [mapa, setMapa] = useState(false);
   useRevelar(root);
   return (
-    <section id="local" ref={root} className="relative bg-fundo-2 px-5 py-20 sm:py-24">
+    <section id="local" ref={root} className="relative bg-white/[0.022] px-5 py-20 sm:py-24">
       <TituloSecao frase="Te esperamos" titulo={evento.local.nome} apoio={`${evento.local.bairro} · ${evento.local.uf}`} />
 
       <ul data-rev className="mx-auto mt-8 flex max-w-[560px] flex-wrap items-center justify-center gap-2.5">
@@ -70,7 +70,7 @@ export function Local() {
  */
 export function Rodape() {
   return (
-    <footer id="rodape" className="relative isolate overflow-hidden bg-fundo pt-16 text-center">
+    <footer id="rodape" className="relative z-[1] isolate overflow-hidden pt-16 text-center">
       {/* carne na grelha: um recorte para celular e outro para telas largas */}
       <div
         aria-hidden

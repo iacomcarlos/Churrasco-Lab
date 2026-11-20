@@ -25,7 +25,7 @@ function jsonLd() {
     isAccessibleForFree: true,
     inLanguage: "pt-BR",
     url: SITE_URL,
-    image: `${SITE_URL}/og.png`,
+    image: `${SITE_URL}/og.jpg`,
     location: lugar,
     organizer: { "@type": "Organization", name: evento.realizacao.nome },
     subEvent: aulas.map((a) => ({

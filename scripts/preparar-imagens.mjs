@@ -35,13 +35,6 @@ if (SRC !== "/") {
 await sharp(ARTE).extract({ left: 0, top: 704, width: 1660, height: 244 }).webp({ quality: 84 }).toFile("public/fotos/grelha-carne.webp");
 await sharp(ARTE).extract({ left: 905, top: 520, width: 755, height: 428 }).webp({ quality: 84 }).toFile("public/fotos/grelha-carne-celular.webp");
 
-/* ── Régua de marcas do flyer, em duas metades (no celular ficam uma sobre a outra) ── */
-{
-  const regua = sharp(FLYER).extract({ left: 55, top: 1440, width: 800, height: 127 });
-  await regua.clone().extract({ left: 22, top: 6, width: 318, height: 115 }).png().toFile("public/brand/regua-realizacao.png");
-  await regua.clone().extract({ left: 372, top: 6, width: 406, height: 115 }).png().toFile("public/brand/regua-parceria.png");
-}
-
 /* ── Profissionais (fotos enviadas pela organização) ── */
 if (SRC !== "/") {
   const prof = [

@@ -92,11 +92,19 @@ export function Rodape() {
         </p>
         <p className="espacado mt-2 text-[12.5px] font-semibold text-ambar">{evento.entrada}</p>
 
-        {/* régua de marcas, como no flyer: realização à esquerda, parceria à direita */}
-        <div className="mt-[250px] flex w-full max-w-[640px] flex-col items-center justify-center gap-x-3 rounded-[20px] bg-[#f5ede7] px-4 py-2 shadow-[0_18px_50px_-18px_rgb(0_0_0/0.8)] min-[520px]:flex-row sm:mt-[110px]">
-          <img src="/brand/regua-realizacao.png" width={318} height={115} loading="lazy" alt={`Realização: ${evento.realizacao.nome}`} className="h-auto w-full max-w-[250px]" />
-          <span aria-hidden className="h-px w-4/5 bg-tinta/25 min-[520px]:h-14 min-[520px]:w-px" />
-          <img src="/brand/regua-parceria.png" width={406} height={115} loading="lazy" alt={`Parceria: ${evento.parceria.nome}`} className="h-auto w-full max-w-[320px]" />
+        {/* régua de marcas: realização à esquerda, parceria à direita.
+            Em texto até chegar o arquivo da régua oficial (HDU e GDF); a régua antiga trazia a marca errada. */}
+        <div className="mt-[250px] grid w-full max-w-[640px] gap-x-6 gap-y-4 rounded-[20px] bg-[#f2ebe2] px-6 py-5 text-tinta shadow-[0_18px_50px_-18px_rgb(0_0_0/0.8)] min-[520px]:grid-cols-2 sm:mt-[110px]">
+          <div>
+            <p className="text-[11px] font-bold tracking-[0.2em] uppercase">Realização</p>
+            <p className="titulo mt-1.5 text-[30px] tracking-[0.02em]">{evento.realizacao.sigla}</p>
+            <p className="mt-1 text-[12px] leading-tight font-bold tracking-[0.04em] uppercase">{evento.realizacao.nome}</p>
+          </div>
+          <div className="border-t border-tinta/20 pt-4 min-[520px]:border-t-0 min-[520px]:border-l min-[520px]:pt-0 min-[520px]:pl-6">
+            <p className="text-[11px] font-bold tracking-[0.2em] uppercase">Parceria</p>
+            <p className="mt-1.5 text-[14px] leading-snug font-semibold">{evento.parceria.nome}</p>
+            <p className="titulo mt-1 text-[22px] tracking-[0.02em]">{evento.parceria.governo}</p>
+          </div>
         </div>
         <p className="pb-safe mt-5 pb-5 text-[12px] font-medium text-texto/80 [text-shadow:0_1px_8px_rgb(0_0_0/0.9)]">
           © {evento.ano} {evento.nomeCurto}

@@ -31,13 +31,9 @@ export const evento = {
   titulo: "Churrasco LAB Brasília 2026 | 27 e 28 de Novembro",
   descricao:
     "O Churrasco LAB Brasília acontece nos dias 27 e 28 de novembro, na Praça da Bíblia, em Ceilândia. Entrada gratuita. Confira a programação das aulas-show.",
-  realizacao: { nome: "Instituto Poder Social", sigla: "IPS", logo: "/brand/ips.png", largura: 330, altura: 150 },
-  parceria: {
-    nome: "Secretaria de Desenvolvimento Econômico, Trabalho e Renda · Governo do Distrito Federal",
-    logo: "/brand/sedet-gdf.png",
-    largura: 500,
-    altura: 140,
-  },
+  /** Realização confirmada pela organização em 21/11/2026 (régua oficial enviada). */
+  realizacao: { nome: "Humanidade Diversificada e Unida", sigla: "HDU" },
+  parceria: { nome: "Secretaria de Desenvolvimento Econômico, Trabalho e Renda", governo: "GDF" },
 } as const;
 
 /* ───────────────── Profissionais ───────────────── */

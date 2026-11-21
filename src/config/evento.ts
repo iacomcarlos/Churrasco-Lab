@@ -34,6 +34,8 @@ export const evento = {
   /** Realização confirmada pela organização em 21/11/2026 (régua oficial enviada). */
   realizacao: { nome: "Humanidade Diversificada e Unida", sigla: "HDU" },
   parceria: { nome: "Secretaria de Desenvolvimento Econômico, Trabalho e Renda", governo: "GDF" },
+  /** Título do bloco ("Apoio") escolhido por nós; troque aqui se a organização preferir outro. */
+  apoio: { titulo: "Apoio", nome: "Fórum de Economia Solidária do Distrito Federal e Entorno (FESDFE)" },
 } as const;
 
 /* ───────────────── Profissionais ───────────────── */

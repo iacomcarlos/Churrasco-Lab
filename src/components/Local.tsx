@@ -82,7 +82,7 @@ export function Rodape() {
         className="absolute inset-x-0 bottom-0 -z-10 hidden h-[300px] bg-cover bg-[position:center_bottom] sm:block"
         style={{ backgroundImage: "url(/fotos/grelha-carne.webp)", maskImage: "linear-gradient(to top, #000 55%, transparent)", WebkitMaskImage: "linear-gradient(to top, #000 55%, transparent)" }}
       />
-      <div className="mx-auto flex max-w-[680px] flex-col items-center px-5">
+      <div className="mx-auto flex max-w-[900px] flex-col items-center px-5">
         <LogoAnimada className="w-[210px] sm:w-[240px]" />
         <p className="titulo mt-2 text-[clamp(24px,7vw,32px)]">
           27 e 28 <span className="text-ambar">de novembro</span>
@@ -93,10 +93,15 @@ export function Rodape() {
         <p className="espacado mt-2 text-[12.5px] font-semibold text-ambar">{evento.entrada}</p>
 
         {/* régua de marcas oficial (enviada pela organização em 21/11/2026): realização à esquerda, parceria à direita */}
-        <div className="mt-[250px] flex w-full max-w-[640px] flex-col items-center justify-center gap-x-4 gap-y-1 rounded-[20px] bg-[#f4ece2] px-4 py-2 shadow-[0_18px_50px_-18px_rgb(0_0_0/0.8)] min-[520px]:flex-row sm:mt-[110px]">
+        <div className="mt-[250px] flex w-full max-w-[640px] flex-col items-center justify-center gap-x-4 gap-y-1 rounded-[20px] bg-[#f4ece2] px-4 py-2 shadow-[0_18px_50px_-18px_rgb(0_0_0/0.8)] min-[820px]:max-w-[860px] min-[820px]:flex-row sm:mt-[110px]">
           <img src="/brand/regua-realizacao.png" width={420} height={252} loading="lazy" alt={`Realização: ${evento.realizacao.sigla}, ${evento.realizacao.nome}`} className="h-auto w-full max-w-[210px]" />
-          <span aria-hidden className="h-px w-4/5 bg-tinta/20 min-[520px]:h-16 min-[520px]:w-px" />
+          <span aria-hidden className="h-px w-4/5 bg-tinta/20 min-[820px]:h-16 min-[820px]:w-px" />
           <img src="/brand/regua-parceria.png" width={690} height={226} loading="lazy" alt={`Parceria: ${evento.parceria.nome}, ${evento.parceria.governo}`} className="h-auto w-full max-w-[330px]" />
+          <span aria-hidden className="h-px w-4/5 bg-tinta/20 min-[820px]:h-16 min-[820px]:w-px" />
+          <div className="flex shrink-0 flex-col items-center py-2">
+            <p className="text-[10.5px] font-bold tracking-[0.2em] text-[#14100e] uppercase">{evento.apoio.titulo}</p>
+            <img src="/brand/economia-solidaria.png" width={384} height={368} loading="lazy" alt={`${evento.apoio.titulo}: ${evento.apoio.nome}`} className="mt-1.5 h-[112px] w-auto" />
+          </div>
         </div>
         <p className="pb-safe mt-5 pb-5 text-[12px] font-medium text-texto/80 [text-shadow:0_1px_8px_rgb(0_0_0/0.9)]">
           © {evento.ano} {evento.nomeCurto}

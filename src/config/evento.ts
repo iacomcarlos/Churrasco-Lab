@@ -63,9 +63,7 @@ export const profissionais: Profissional[] = [
   { id: "jose", nome: "José", marca: "Molotov" },
   {
     id: "jonathan",
-    nome: "Jonathan",
-    marca: "Alecrim",
-    nomeCompleto: "Jonathan Nobre",
+    nome: "Jonathan Nobre",
     foto: "/profissionais/jonathan.webp",
     fotoMini: "/profissionais/jonathan-mini.webp",
     foco: "50% 18%",

@@ -49,8 +49,9 @@ function Cartao({ aula, marcada, sit, abrir, i }: { aula: Aula; marcada: boolean
     <li
       data-rev
       style={{ ["--atraso" as string]: `${i * 0.06}s` }}
-      className={`cartao flex min-w-0 items-center gap-2 p-2.5 transition-[border-color,box-shadow,opacity] duration-300 ${marcada ? "!border-brasa shadow-[0_0_0_1px_var(--color-brasa),0_14px_36px_-18px_rgb(244_122_18/0.7)]" : ""} ${encerrada ? "opacity-55" : ""}`}
+      className={`cartao min-w-0 p-2.5 transition-[border-color,box-shadow,opacity] duration-300 ${marcada ? "!border-brasa shadow-[0_0_0_1px_var(--color-brasa),0_14px_36px_-18px_rgb(244_122_18/0.7)]" : ""} ${encerrada ? "opacity-55" : ""}`}
     >
+      <div className="flex min-w-0 items-center gap-2">
       {temPerfil ? (
         <button type="button" onClick={() => abrir(prof)} aria-label={`${aula.tema}, com ${nomeNaProgramacao(prof)}. Ver perfil.`} className="flex min-w-0 flex-1 items-center gap-3 rounded-[18px] sm:gap-3.5">
           {corpo}
@@ -72,13 +73,25 @@ function Cartao({ aula, marcada, sit, abrir, i }: { aula: Aula; marcada: boolean
       >
         {marcada ? <Check className="size-6" strokeWidth={3} aria-hidden /> : <Plus className="size-6" strokeWidth={2.4} aria-hidden />}
       </button>
+      </div>
+      {/* mini currículo, do material enviado pelo próprio profissional */}
+      {prof.bio?.[0] && (
+        <p className="mt-2.5 border-t border-[rgb(255_190_130/0.12)] px-1.5 pt-2.5 pb-1 text-[13.5px] leading-[1.5] text-suave">
+          {prof.bio[0]}{" "}
+          {prof.bio.length > 1 && (
+            <button type="button" onClick={() => abrir(prof)} className="font-bold text-ambar underline underline-offset-2">
+              ver mais
+            </button>
+          )}
+        </p>
+      )}
     </li>
   );
 }
 
 /**
  * AULAS-SHOW: as seis aulas à vista, separadas por dia. Cada cartão mostra foto, horário,
- * tema e quem ensina. O botão "+" escolhe a aula para a inscrição; tocar no cartão abre o perfil.
+ * tema e quem ensina. O botão "+" escolhe a aula para a inscrição. O mini currículo aparece no próprio cartão.
  */
 export function Aulas() {
   const root = useRef<HTMLElement>(null);

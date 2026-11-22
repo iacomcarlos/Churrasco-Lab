@@ -182,12 +182,35 @@ export const links = {
 /* ───────────────── Textos (curtos, para entender sem precisar ler muito) ───────────────── */
 
 export const textos = {
-  evento: {
-    frase: "Aprenda com quem vive da brasa.",
-    pilares: [
-      { id: "brasa", titulo: "A brasa", texto: "Fogo, carne e técnica na prática." },
-      { id: "escola", titulo: "A escola", texto: "Conhecimento que vira profissão e renda." },
+  /** Seção "Sobre o evento": texto enviado pela organização em 22/11/2026, encurtado. */
+  sobre: {
+    frase: "Sobre o evento",
+    titulo: "O que é o Churrasco LAB?",
+    chamada: "Muito mais que um evento de churrasco. Uma experiência que une sabor, conhecimento e oportunidades.",
+    paragrafos: [
+      "Um evento gratuito que reúne gastronomia, capacitação profissional e empreendedorismo para quem é apaixonado pelo universo do churrasco.",
+      "Em dois dias, você aprende com chefs e pitmasters, acompanha aulas-show, descobre novas técnicas e conhece caminhos para transformar a paixão pelo churrasco em fonte de renda.",
+      "O evento também valoriza o empreendedorismo, incentiva a qualificação profissional e fortalece a economia local.",
     ],
+    fecho: "Aqui, o churrasco vai muito além da brasa: é aprendizado, conexão e transformação!",
+    /** Números e atrações do flyer oficial da 2ª edição (Instagram @churrascolab). */
+    atracoes: [
+      { id: "aulas", n: "6", titulo: "Aulas-show", texto: "com pitmasters no palco" },
+      { id: "paineis", n: "2", titulo: "Painéis", texto: "de conversa" },
+      { id: "estandes", n: "30", titulo: "Estandes", texto: "15 do churrasco + 15 de economia solidária" },
+      { id: "praca", n: "", titulo: "Praça de alimentação", texto: "churrasco assado na hora" },
+      { id: "podcast", n: "", titulo: "Estúdio de podcast", texto: "" },
+      { id: "shows", n: "", titulo: "Shows locais + DJ", texto: "" },
+    ],
+    /** Fotos da edição passada, publicadas no Instagram oficial. */
+    fotos: [
+      { src: "/sobre/foto-acougue.webp", alt: "Açougueiro apresenta um corte de carne durante aula na edição passada" },
+      { src: "/sobre/foto-corte.webp", alt: "Profissional prepara cortes de carne na bancada" },
+      { src: "/sobre/foto-aula.webp", alt: "Participante acompanha uma demonstração ao lado da grelha" },
+      { src: "/sobre/foto-facas.webp", alt: "Facas artesanais expostas em um estande" },
+      { src: "/sobre/foto-bebidas.webp", alt: "Garrafas expostas em um estande de produtores" },
+    ],
+    instagram: "https://www.instagram.com/churrascolab/",
   },
   privacidade: "Ao se inscrever, você autoriza a organização do evento a usar seus dados para registrar a inscrição e enviar avisos.",
   compartilhar: () =>

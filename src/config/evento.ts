@@ -58,13 +58,13 @@ export type Profissional = {
 };
 
 export const profissionais: Profissional[] = [
-  { id: "jose", nome: "José", marca: "Molotov" },
+  { id: "jose", nome: "José", marca: "Molotov", nomeCompleto: "José Aguiar", foto: "/profissionais/jose.webp", fotoMini: "/profissionais/jose-mini.webp", foco: "50% 12%" },
   {
     id: "jonathan",
     nome: "Jonathan Nobre",
     foto: "/profissionais/jonathan.webp",
     fotoMini: "/profissionais/jonathan-mini.webp",
-    foco: "50% 18%",
+    foco: "50% 12%",
     bio: [
       "Chef, empreendedor e gestor de restaurantes, com mais de 8 anos de experiência no Brasil e nos Estados Unidos.",
       "Fundador do Alecrim Smokehouse, em Brasília. Especialista em American BBQ, churrasco brasileiro e parrilla argentina, com experiência em gestão, desenvolvimento de negócios, controle de custos e liderança de equipes.",
@@ -77,7 +77,7 @@ export const profissionais: Profissional[] = [
     nomeCompleto: "Jefferson Faustino",
     foto: "/profissionais/jefferson.webp",
     fotoMini: "/profissionais/jefferson-mini.webp",
-    foco: "50% 22%",
+    foco: "50% 12%",
     bio: [
       "À frente do Braseiro61, une o domínio do fogo, a técnica do churrasco e a valorização das raízes da comida caipira.",
       "Em Brasília, atua também como churrasqueiro e mentor, formando novos profissionais em experiências práticas, workshops e vivências à beira do fogo.",
@@ -89,7 +89,7 @@ export const profissionais: Profissional[] = [
     marca: "Rusticano",
     foto: "/profissionais/gabrielle.webp",
     fotoMini: "/profissionais/gabrielle-mini.webp",
-    foco: "50% 20%",
+    foco: "50% 12%",
     bio: [
       "Formada em Administração de Empresas, decidiu empreender junto com o esposo e construir a própria hamburgueria do zero, mesmo sem recursos e sem experiência no ramo.",
       "Responsável pela administração do negócio, ajudou a estruturar, organizar e fazer crescer a empresa, que está em funcionamento há sete anos.",
@@ -102,7 +102,7 @@ export const profissionais: Profissional[] = [
     nomeCompleto: "Pedro Henrique",
     foto: "/profissionais/pedro.webp",
     fotoMini: "/profissionais/pedro-mini.webp",
-    foco: "50% 20%",
+    foco: "50% 12%",
     bio: [
       "Formado em Administração de Empresas, começou na cozinha em 2015. Em 2018 conheceu o American Barbecue, aprofundou os estudos e, no fim daquele ano, fundou o 061bbq junto com a esposa.",
       "Hoje tem um ponto de vendas de rua em Águas Claras, é sócio proprietário da unidade de Vicente Pires e participa de grandes eventos e serviços de buffet.",
@@ -113,7 +113,7 @@ export const profissionais: Profissional[] = [
     nome: "Andrey Angelim",
     foto: "/profissionais/andrey.webp",
     fotoMini: "/profissionais/andrey-mini.webp",
-    foco: "50% 18%",
+    foco: "50% 12%",
     bio: [
       "Cozinheiro e chef de cozinha formado pelo IESB, em Brasília. São 10 anos de cozinha profissional, sempre com a carne no centro: churrasco, parrilla e cozinha de fogo.",
       "Desde 2021 está à frente da cozinha da Fazenda Churrascada Brasília. Também se dedica ao ensino, com aulas para iniciantes e profissionais, e à consultoria para restaurantes.",

@@ -11,26 +11,34 @@ import { situacoes, type Situacao } from "@/lib/tempo";
 import { irPara } from "@/lib/nav";
 import { track } from "@/lib/analytics";
 
-function Retrato({ p, className }: { p: Profissional; className: string }) {
-  return p.fotoMini ? (
-    <img src={p.fotoMini} alt="" width={240} height={240} loading="lazy" className={`${className} object-cover`} />
-  ) : (
-    /* sem foto oficial: inicial do nome, nada de retrato inventado */
-    <span aria-hidden className={`${className} titulo grid place-items-center bg-cartao-2 text-[34px] text-brasa`}>
-      {p.nome[0]}
-    </span>
-  );
-}
-
 function Cartao({ aula, marcada, sit, abrir, i }: { aula: Aula; marcada: boolean; sit?: Situacao; abrir: (p: Profissional) => void; i: number }) {
   const prof = profissionalPorId(aula.profissional);
-  const temPerfil = Boolean(prof.bio?.length);
   const encerrada = sit === "encerrada";
-  const corpo = (
-    <>
-      <Retrato p={prof} className="size-[68px] shrink-0 rounded-[16px] sm:size-[96px] sm:rounded-[18px]" />
-      <span className="min-w-0 flex-1 text-left">
-        <span className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[14px] font-bold text-ambar">
+  return (
+    <li
+      data-rev
+      style={{ ["--atraso" as string]: `${i * 0.06}s` }}
+      className={`cartao flex min-w-0 flex-col overflow-hidden !p-0 transition-[border-color,box-shadow,opacity] duration-300 sm:flex-row ${marcada ? "!border-brasa shadow-[0_0_0_1px_var(--color-brasa),0_14px_36px_-18px_rgb(244_122_18/0.7)]" : ""} ${encerrada ? "opacity-55" : ""}`}
+    >
+      {/* a foto é o destaque do cartão; o nome vai por cima dela, na parte escura de baixo */}
+      <button type="button" onClick={() => abrir(prof)} aria-label={`Ver perfil de ${prof.nomeCompleto || nomeNaProgramacao(prof)}`} className="group relative block aspect-[5/4.6] w-full shrink-0 overflow-hidden bg-fundo text-left sm:aspect-auto sm:min-h-[330px] sm:w-[44%]">
+        {prof.foto ? (
+          <img src={prof.foto} alt="" width={880} height={1100} loading="lazy" className="absolute inset-0 size-full object-cover transition-transform duration-700 group-hover:scale-[1.04]" style={{ objectPosition: prof.foco }} />
+        ) : (
+          /* sem foto oficial: inicial do nome, nada de retrato inventado */
+          <span aria-hidden className="titulo absolute inset-0 grid place-items-center bg-cartao-2 text-[90px] text-brasa">
+            {prof.nome[0]}
+          </span>
+        )}
+        <span aria-hidden className="absolute inset-x-0 bottom-0 h-[52%] bg-gradient-to-t from-[rgb(12_7_5/0.96)] via-[rgb(12_7_5/0.6)] to-transparent" />
+        <span className="absolute inset-x-0 bottom-0 px-5 pb-4">
+          <span className="block text-[clamp(22px,6.2vw,26px)] leading-[1.05] font-extrabold tracking-[-0.02em] text-texto sm:text-[23px]">{prof.nome}</span>
+          {prof.marca && <span className="manuscrito mt-0.5 block text-[24px] leading-[1.1] sm:text-[22px]">{prof.marca}</span>}
+        </span>
+      </button>
+
+      <div className="flex min-w-0 flex-1 flex-col p-5 sm:py-6">
+        <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[14px] font-bold text-ambar">
           <time dateTime={`${aula.data}T${aula.inicio}-03:00`}>{hora(aula.inicio)}</time>
           <span className="font-medium text-suave">às {hora(aula.fim)}</span>
           {sit === "andamento" && (
@@ -39,59 +47,43 @@ function Cartao({ aula, marcada, sit, abrir, i }: { aula: Aula; marcada: boolean
             </span>
           )}
           {encerrada && <span className="rounded-full border border-suave/40 px-2 py-0.5 text-[10.5px] font-semibold tracking-[0.12em] text-suave uppercase">encerrada</span>}
-        </span>
-        <span className="mt-1 block text-[clamp(15px,4.1vw,20px)] leading-[1.15] font-extrabold tracking-[-0.015em] [overflow-wrap:anywhere]">{aula.tema}</span>
-        <span className="mt-1.5 block text-[14px] leading-tight text-suave">{nomeNaProgramacao(prof)}</span>
-      </span>
-    </>
-  );
-  return (
-    <li
-      data-rev
-      style={{ ["--atraso" as string]: `${i * 0.06}s` }}
-      className={`cartao min-w-0 p-2.5 transition-[border-color,box-shadow,opacity] duration-300 ${marcada ? "!border-brasa shadow-[0_0_0_1px_var(--color-brasa),0_14px_36px_-18px_rgb(244_122_18/0.7)]" : ""} ${encerrada ? "opacity-55" : ""}`}
-    >
-      <div className="flex min-w-0 items-center gap-2">
-      {temPerfil ? (
-        <button type="button" onClick={() => abrir(prof)} aria-label={`${aula.tema}, com ${nomeNaProgramacao(prof)}. Ver perfil.`} className="flex min-w-0 flex-1 items-center gap-3 rounded-[18px] sm:gap-3.5">
-          {corpo}
-        </button>
-      ) : (
-        <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-3.5">{corpo}</div>
-      )}
-      <button
-        type="button"
-        aria-pressed={marcada}
-        aria-label={marcada ? `Tirar ${aula.tema} da minha inscrição` : `Quero assistir ${aula.tema}`}
-        onClick={() => {
-          lista.alternar(aula.id);
-          track("aula_marcar", { aula: aula.id, marcada: !marcada });
-        }}
-        className={`mr-1 grid size-[46px] shrink-0 sm:size-[52px] place-items-center rounded-full border-[1.5px] transition-[background-color,border-color,color,transform] duration-300 active:scale-90 ${
-          marcada ? "border-brasa bg-brasa text-tinta" : "border-brasa/70 text-brasa hover:bg-brasa/15"
-        }`}
-      >
-        {marcada ? <Check className="size-6" strokeWidth={3} aria-hidden /> : <Plus className="size-6" strokeWidth={2.4} aria-hidden />}
-      </button>
-      </div>
-      {/* mini currículo, do material enviado pelo próprio profissional */}
-      {prof.bio?.[0] && (
-        <p className="mt-2.5 border-t border-[rgb(255_190_130/0.12)] px-1.5 pt-2.5 pb-1 text-[13.5px] leading-[1.5] text-suave">
-          {prof.bio[0]}{" "}
-          {prof.bio.length > 1 && (
-            <button type="button" onClick={() => abrir(prof)} className="font-bold text-ambar underline underline-offset-2">
-              ver mais
-            </button>
-          )}
         </p>
-      )}
+        <h4 className="mt-1.5 text-[clamp(20px,5.6vw,24px)] leading-[1.12] font-extrabold tracking-[-0.02em] [overflow-wrap:anywhere] sm:text-[22px]">{aula.tema}</h4>
+        {/* mini currículo, do material enviado pelo próprio profissional */}
+        {prof.bio?.[0] && (
+          <p className="mt-3 border-l-2 border-brasa/60 pl-3 text-[14.5px] leading-[1.55] text-texto/85">
+            {prof.bio[0]}{" "}
+            {prof.bio.length > 1 && (
+              <button type="button" onClick={() => abrir(prof)} className="font-bold whitespace-nowrap text-ambar underline underline-offset-2">
+                ver mais
+              </button>
+            )}
+          </p>
+        )}
+        <span aria-hidden className="min-h-5 flex-1" />
+        {inscricaoAtiva && (
+          <button
+            type="button"
+            aria-pressed={marcada}
+            aria-label={marcada ? `Tirar ${aula.tema} da minha inscrição` : `Quero assistir ${aula.tema}`}
+            onClick={() => {
+              lista.alternar(aula.id);
+              track("aula_marcar", { aula: aula.id, marcada: !marcada });
+            }}
+            className={`btn btn-sm w-full ${marcada ? "btn-brasa" : "btn-linha"}`}
+          >
+            {marcada ? <Check className="size-4" strokeWidth={3} aria-hidden /> : <Plus className="size-4" strokeWidth={2.6} aria-hidden />}
+            {marcada ? "Aula escolhida" : "Quero esta aula"}
+          </button>
+        )}
+      </div>
     </li>
   );
 }
 
 /**
  * AULAS-SHOW: as seis aulas à vista, separadas por dia. Cada cartão mostra foto, horário,
- * tema e quem ensina. O botão "+" escolhe a aula para a inscrição. O mini currículo aparece no próprio cartão.
+ * tema e quem ensina. O botão "Quero esta aula" escolhe a aula para a inscrição. A foto e o mini currículo são o destaque do cartão.
  */
 export function Aulas() {
   const root = useRef<HTMLElement>(null);
@@ -126,7 +118,7 @@ export function Aulas() {
 
   return (
     <section id="aulas" ref={root} className="relative bg-white/[0.022] px-5 py-20 sm:py-24">
-      <TituloSecao frase="Bora aprender" titulo="Aulas-show" apoio={inscricaoAtiva ? <>Toque no <strong className="text-ambar">+</strong> para escolher as suas.</> : `${aulas.length} aulas em ${dias.length} dias. ${profissionais.length} profissionais.`} />
+      <TituloSecao frase="Bora aprender" titulo="Aulas-show" apoio={inscricaoAtiva ? "Conheça quem ensina e escolha as suas aulas." : `${aulas.length} aulas em ${dias.length} dias. ${profissionais.length} profissionais.`} />
 
       <div className="mx-auto mt-10 max-w-[1040px] space-y-10">
         {dias.map((d) => (
@@ -138,7 +130,7 @@ export function Aulas() {
               </span>
               <span aria-hidden className="h-px w-10 bg-brasa/50 sm:w-20" />
             </h3>
-            <ul className="mx-auto mt-5 grid max-w-[520px] grid-cols-1 gap-3 lg:max-w-none lg:grid-cols-2 lg:gap-4">
+            <ul className="mx-auto mt-5 grid max-w-[440px] grid-cols-1 gap-4 sm:max-w-[620px] lg:max-w-none lg:grid-cols-2">
               {aulasDoDia(d.data).map((a) => (
                 <Cartao key={a.id} aula={a} marcada={marcadas.includes(a.id)} sit={sit?.[a.id]} abrir={abrir} i={ordem++ % 2} />
               ))}
@@ -170,7 +162,7 @@ export function Aulas() {
         {aberto && (
           <div className="grid max-h-[92svh] overflow-y-auto sm:grid-cols-[0.82fr_1.18fr]">
             <div className="relative h-[36svh] min-h-[230px] bg-fundo sm:h-auto sm:min-h-[480px]">
-              {aberto.foto && <img src={aberto.foto} alt={`Foto de ${aberto.nomeCompleto || aberto.nome}`} width={900} height={1200} className="absolute inset-0 size-full object-cover" style={{ objectPosition: aberto.foco }} />}
+              {aberto.foto && <img src={aberto.foto} alt={`Foto de ${aberto.nomeCompleto || aberto.nome}`} width={880} height={1100} className="absolute inset-0 size-full object-cover" style={{ objectPosition: aberto.foco }} />}
               <span aria-hidden className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-cartao to-transparent sm:hidden" />
             </div>
             <div className="p-6 text-center sm:p-8 sm:text-left">

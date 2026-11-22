@@ -100,7 +100,7 @@ export function Rodape() {
           <span aria-hidden className="h-px w-4/5 bg-tinta/20 min-[820px]:h-16 min-[820px]:w-px" />
           <div className="flex shrink-0 flex-col items-center py-2">
             <p className="text-[10.5px] font-bold tracking-[0.2em] text-[#14100e] uppercase">{evento.apoio.titulo}</p>
-            <img src="/brand/economia-solidaria.png" width={384} height={368} loading="lazy" alt={`${evento.apoio.titulo}: ${evento.apoio.nome}`} className="mt-1.5 h-[112px] w-auto" />
+            <img src="/brand/economia-solidaria.png" width={1007} height={363} loading="lazy" alt={`${evento.apoio.titulo}: ${evento.apoio.nome}`} className="mt-2 h-auto w-[210px] max-w-full mix-blend-multiply" />
           </div>
         </div>
         <p className="pb-safe mt-5 pb-5 text-[12px] font-medium text-texto/80 [text-shadow:0_1px_8px_rgb(0_0_0/0.9)]">

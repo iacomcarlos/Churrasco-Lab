@@ -1,7 +1,8 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 import { useEffect, useRef, useState } from "react";
-import { Camera, Flame, MessagesSquare, Mic, Music, Pause, Play, Store, Utensils } from "lucide-react";
+import { createPortal } from "react-dom";
+import { Camera, Flame, MessagesSquare, Mic, Music, Pause, Play, Store, Utensils, X } from "lucide-react";
 import { textos } from "@/config/evento";
 import { TituloSecao } from "@/components/Pecas";
 import { useRevelar } from "@/lib/revelar";
@@ -10,35 +11,96 @@ import { track } from "@/lib/analytics";
 const icones = { aulas: Flame, paineis: MessagesSquare, estandes: Store, praca: Utensils, podcast: Mic, shows: Music } as const;
 const tempo = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
 
-/** Vídeo da edição passada (sem som, em repetição, só toca quando está na tela) com o botão da narração oficial. */
+/**
+ * Vídeo da edição passada (sem som, em repetição, só toca quando está na tela) com a narração oficial.
+ *
+ * A narração começa sozinha quando a seção chega ao meio da tela e pausa quando o visitante sai dela.
+ * Ao sair, aparece um botão flutuante para quem quiser continuar ouvindo no resto do site.
+ * Se o navegador bloquear o som automático, ela começa no primeiro toque dentro da seção.
+ * Quem pausa na mão não é incomodado de novo: a narração só volta se a pessoa apertar o botão.
+ */
 function Video() {
+  const caixa = useRef<HTMLDivElement>(null);
   const video = useRef<HTMLVideoElement>(null);
   const audio = useRef<HTMLAudioElement>(null);
   const [tocando, setTocando] = useState(false);
   const [pos, setPos] = useState(0);
   const [dur, setDur] = useState(43);
+  const [fora, setFora] = useState(false);
+  const [dispensado, setDispensado] = useState(false);
+  /* estado que os ouvintes precisam ler na hora, sem esperar o React */
+  const e = useRef({ dentro: false, seguir: false, manual: false, fim: false, pendente: false });
 
   useEffect(() => {
     const v = video.current;
-    if (!v || !("IntersectionObserver" in window)) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const io = new IntersectionObserver(([e]) => (e.isIntersecting ? v.play().catch(() => undefined) : v.pause()), { threshold: 0.25 });
-    io.observe(v);
-    return () => io.disconnect();
+    const a = audio.current;
+    const sec = caixa.current?.closest("section");
+    if (!v || !a || !sec || !("IntersectionObserver" in window)) return;
+    const calmo = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const tentar = () => {
+      const st = e.current;
+      if (!st.dentro || st.manual || st.fim || document.hidden) return;
+      a.play().then(
+        () => (st.pendente = false),
+        () => (st.pendente = true),
+      );
+    };
+    const ioVideo = new IntersectionObserver(([x]) => (x.isIntersecting && !calmo ? v.play().catch(() => undefined) : v.pause()), { threshold: 0.25 });
+    ioVideo.observe(v);
+    /* "dentro" = a seção cruza a faixa central da tela */
+    const ioSec = new IntersectionObserver(
+      ([x]) => {
+        const st = e.current;
+        st.dentro = x.isIntersecting;
+        setFora(!x.isIntersecting);
+        if (x.isIntersecting) {
+          st.seguir = false;
+          if (!calmo) tentar();
+        } else if (!st.seguir) {
+          st.pendente = false;
+          a.pause();
+        }
+      },
+      { rootMargin: "-35% 0px -35% 0px" },
+    );
+    ioSec.observe(sec);
+    const gestos = ["pointerdown", "keydown", "touchend"] as const;
+    const noGesto = () => e.current.pendente && tentar();
+    gestos.forEach((g) => window.addEventListener(g, noGesto, { passive: true }));
+    const visibilidade = () => document.hidden && !a.paused && a.pause();
+    document.addEventListener("visibilitychange", visibilidade);
+    return () => {
+      ioVideo.disconnect();
+      ioSec.disconnect();
+      gestos.forEach((g) => window.removeEventListener(g, noGesto));
+      document.removeEventListener("visibilitychange", visibilidade);
+    };
   }, []);
 
-  const alternar = () => {
+  /** Botão do vídeo e botão flutuante: toca ou pausa por decisão do visitante. */
+  const alternar = (origem: "secao" | "flutuante") => {
     const a = audio.current;
     if (!a) return;
+    const st = e.current;
     if (a.paused) {
+      st.manual = false;
+      st.fim = false;
+      st.pendente = false;
+      if (origem === "flutuante") st.seguir = true;
       a.play().catch(() => undefined);
-      video.current?.play().catch(() => undefined);
-      track("narracao", { acao: "tocar" });
-    } else a.pause();
+      if (origem === "secao") video.current?.play().catch(() => undefined);
+      track("narracao", { acao: origem === "flutuante" ? "continuar_fora" : "tocar" });
+    } else {
+      st.manual = true;
+      a.pause();
+    }
   };
 
+  const comecou = pos > 0;
+  const flutuante = fora && !dispensado && (tocando || comecou);
   return (
-    <div data-rev className="mx-auto w-full max-w-[320px] lg:max-w-[340px]">
+    <div ref={caixa} data-rev className="mx-auto w-full max-w-[320px] lg:max-w-[340px]">
       <div className="relative aspect-[9/16] overflow-hidden rounded-[28px] border border-[rgb(255_190_130/0.2)] bg-fundo shadow-[0_30px_70px_-30px_rgb(244_122_18/0.55)]">
         <video ref={video} className="absolute inset-0 size-full object-cover" poster="/sobre/edicao-passada.webp" muted loop playsInline preload="none" aria-label="Cenas da edição passada do Churrasco LAB">
           <source src="/sobre/edicao-passada.mp4" type="video/mp4" />
@@ -46,10 +108,10 @@ function Video() {
         <span className="espacado absolute top-3 left-3 rounded-full bg-fundo/75 px-3 py-1.5 text-[10.5px] font-bold text-texto backdrop-blur-sm">Edição passada</span>
         <span aria-hidden className="absolute inset-x-0 bottom-0 h-[38%] bg-gradient-to-t from-[rgb(12_7_5/0.95)] to-transparent" />
         <div className="absolute inset-x-3 bottom-3">
-          <button type="button" onClick={alternar} aria-pressed={tocando} className="btn btn-brasa btn-sm w-full">
+          <button type="button" onClick={() => alternar("secao")} aria-pressed={tocando} className="btn btn-brasa btn-sm w-full">
             {tocando ? <Pause className="size-4" strokeWidth={2.8} aria-hidden /> : <Play className="size-4" strokeWidth={2.8} aria-hidden />}
-            {tocando ? "Pausar narração" : pos > 0 ? "Continuar narração" : "Ouvir a narração"}
-            <span className="font-semibold opacity-75">{tempo(tocando || pos > 0 ? pos : dur)}</span>
+            {tocando ? "Pausar narração" : comecou ? "Continuar narração" : "Ouvir a narração"}
+            <span className="font-semibold opacity-75">{tempo(tocando || comecou ? pos : dur)}</span>
           </button>
           <span aria-hidden className="mt-2 block h-[3px] overflow-hidden rounded-full bg-texto/20">
             <span className="block h-full rounded-full bg-ambar transition-[width] duration-300" style={{ width: `${Math.min(100, (pos / dur) * 100)}%` }} />
@@ -60,12 +122,44 @@ function Video() {
         ref={audio}
         src="/sobre/narracao.m4a"
         preload="none"
-        onPlay={() => setTocando(true)}
+        onPlay={() => {
+          setTocando(true);
+          setDispensado(false);
+        }}
         onPause={() => setTocando(false)}
-        onEnded={() => setPos(0)}
-        onTimeUpdate={(e) => setPos(e.currentTarget.currentTime)}
-        onLoadedMetadata={(e) => Number.isFinite(e.currentTarget.duration) && setDur(e.currentTarget.duration)}
+        onEnded={() => {
+          e.current.fim = true;
+          e.current.seguir = false;
+          setPos(0);
+        }}
+        onTimeUpdate={(ev) => setPos(ev.currentTarget.currentTime)}
+        onLoadedMetadata={(ev) => Number.isFinite(ev.currentTarget.duration) && setDur(ev.currentTarget.duration)}
       />
+
+      {/* fora da seção: botão flutuante para continuar ouvindo durante o resto da rolagem */}
+      {flutuante && createPortal(
+        <div className="nao-imprime fixed top-[76px] left-1/2 z-[60] flex -translate-x-1/2 items-center gap-1 rounded-full border border-brasa/60 bg-fundo/92 p-1 shadow-[0_14px_40px_-12px_rgb(0_0_0/0.9)] backdrop-blur-md">
+          <button type="button" onClick={() => alternar("flutuante")} aria-pressed={tocando} className="flex min-h-[42px] items-center gap-2 rounded-full bg-brasa py-1.5 pr-4 pl-3.5 text-[13.5px] font-extrabold whitespace-nowrap text-tinta">
+            {tocando ? <Pause className="size-4" strokeWidth={2.8} aria-hidden /> : <Play className="size-4" strokeWidth={2.8} aria-hidden />}
+            {tocando ? "Pausar narração" : "Continuar ouvindo"}
+            <span className="font-semibold opacity-75">{tempo(pos)}</span>
+          </button>
+          <button
+            type="button"
+            aria-label="Fechar a narração"
+            onClick={() => {
+              e.current.manual = true;
+              e.current.seguir = false;
+              audio.current?.pause();
+              setDispensado(true);
+            }}
+            className="grid size-[42px] place-items-center rounded-full text-texto/80"
+          >
+            <X className="size-[18px]" aria-hidden />
+          </button>
+        </div>,
+        document.body,
+      )}
     </div>
   );
 }

@@ -228,9 +228,12 @@ export function Passeio() {
                     {dia.semanaCurta} {dia.diaMes} <span className="text-ambar">· {hora(aula.inicio)} às {hora(aula.fim)}</span>
                   </p>
                   <div className="relative p-5">
-                    <h3 className="text-[clamp(22px,6.2vw,27px)] leading-[1.08] font-extrabold tracking-[-0.02em]">{aula.tema}</h3>
-                    <p className="mt-1.5 text-[16px] leading-tight font-bold">
-                      {prof.nome} {prof.marca && <span className="manuscrito ml-1 text-[21px]">{prof.marca}</span>}
+                    {/* o nome da aula vem com etiqueta e em laranja; quem ensina vem depois, menor, com "com" */}
+                    <p className="espacado inline-block rounded-full bg-brasa px-2.5 py-1 text-[10.5px] leading-none font-extrabold text-tinta">Aula-show</p>
+                    <h3 className="mt-2 text-[clamp(25px,7vw,31px)] leading-[1.05] font-extrabold tracking-[-0.02em] text-ambar">{aula.tema}</h3>
+                    <p className="mt-2 flex flex-wrap items-baseline gap-x-1.5 text-[15px] leading-tight font-semibold text-texto">
+                      <span className="text-[13px] font-medium text-suave">com</span>
+                      {prof.nome} {prof.marca && <span className="manuscrito text-[20px] !text-texto/90">{prof.marca}</span>}
                     </p>
                     {prof.bio?.[0] && <p className="mt-2.5 line-clamp-4 border-l-2 border-brasa/60 pl-3 text-[13.5px] leading-[1.5] text-texto/85">{prof.bio[0]}</p>}
                     {inscricaoAtiva && (

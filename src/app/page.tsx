@@ -1,10 +1,11 @@
 import { SITE_URL, aulas, evento, nomeNaProgramacao, profissionalPorId } from "@/config/evento";
-import { Abertura, BotaoFixo, Topo } from "@/components/Abertura";
+import { BotaoFixo, Topo } from "@/components/Abertura";
 import { Evento } from "@/components/Evento";
-import { Aulas } from "@/components/Aulas";
 import { Inscricao } from "@/components/Inscricao";
 import { Local, Rodape } from "@/components/Local";
 import { Faiscas } from "@/components/Faiscas";
+import { Entrada, Passeio } from "@/components/imersivo/Jornada";
+import { Mapa3D } from "@/components/imersivo/Mapa3D";
 
 /* Dados estruturados (Google): o evento e cada aula-show, só com informação oficial. */
 function jsonLd() {
@@ -49,11 +50,13 @@ export default function Page() {
       <Topo />
       <Faiscas />
       <main className="relative z-[1]">
-        <Abertura />
-        <Evento />
-        <Aulas />
+        {/* versão imersiva, aprovada em 23/11/2026 (a anterior está na tag versao-estavel-2026-11-22) */}
+        <Entrada />
+        <Evento semAtracoes />
+        <Mapa3D />
+        <Passeio />
         <Inscricao />
-        <Local />
+        <Local mapa3d />
       </main>
       <Rodape />
       <BotaoFixo />

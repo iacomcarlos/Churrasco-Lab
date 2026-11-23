@@ -58,7 +58,20 @@ export type Profissional = {
 };
 
 export const profissionais: Profissional[] = [
-  { id: "jose", nome: "José", marca: "Molotov", nomeCompleto: "José Aguiar", foto: "/profissionais/jose.webp", fotoMini: "/profissionais/jose-mini.webp", foco: "50% 12%" },
+  {
+    id: "jose",
+    nome: "José",
+    marca: "Molotov",
+    nomeCompleto: "José Domingos de Aguiar",
+    foto: "/profissionais/jose.webp",
+    fotoMini: "/profissionais/jose-mini.webp",
+    foco: "50% 12%",
+    bio: [
+      "Psicólogo de formação e cozinheiro autodidata desde 2018. Em 2019 entrou como sócio em uma hamburgueria e, em 2020, em um bar, onde passou a trabalhar com hambúrguer na brasa.",
+      "Em 2023 fundou a Punk Pickles, primeira empresa de conservas de Brasília, e abriu a Mal Feito Lanches, especializada em smash burger (empresas das quais não faz mais parte).",
+      "No fim de 2024 fundou a Molotov, especializada em chili oil, que no fim de 2025 virou também restaurante, onde serve hambúrguer na brasa. Participou de eventos como Brasas, Chefs do Fogo e Hamburgada Super Quadra Bar.",
+    ],
+  },
   {
     id: "jonathan",
     nome: "Jonathan Nobre",

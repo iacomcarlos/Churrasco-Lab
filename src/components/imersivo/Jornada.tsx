@@ -122,9 +122,8 @@ export function Passeio() {
                     {dia.semanaCurta} {dia.diaMes} <span className="text-ambar">· {hora(aula.inicio)} às {hora(aula.fim)}</span>
                   </p>
                   <div className="relative p-5">
-                    {/* o nome da aula vem com etiqueta e em laranja; quem ensina vem depois, menor, com "com" */}
-                    <p className="espacado inline-block rounded-full bg-brasa px-2.5 py-1 text-[10.5px] leading-none font-extrabold text-tinta">Aula-show</p>
-                    <h3 className="mt-2 text-[clamp(25px,7vw,31px)] leading-[1.05] font-extrabold tracking-[-0.02em] text-ambar">{aula.tema}</h3>
+                    {/* o nome da aula vem em laranja; quem ensina vem depois, menor, com "com" */}
+                    <h3 className="text-[clamp(25px,7vw,31px)] leading-[1.05] font-extrabold tracking-[-0.02em] text-ambar">{aula.tema}</h3>
                     <p className="mt-2 flex flex-wrap items-baseline gap-x-1.5 text-[15px] leading-tight font-semibold text-texto">
                       <span className="text-[13px] font-medium text-suave">com</span>
                       {prof.nome} {prof.marca && <span className="manuscrito text-[20px] !text-texto/90">{prof.marca}</span>}

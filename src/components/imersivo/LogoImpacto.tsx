@@ -57,10 +57,8 @@ export function LogoImpacto({ className = "" }: { className?: string }) {
     let y = 0;
     const aplicar = () => {
       raf = 0;
-      el.style.setProperty("--rx", `${(-y * 13).toFixed(2)}deg`);
-      el.style.setProperty("--ry", `${(x * 17).toFixed(2)}deg`);
-      el.style.setProperty("--lx", `${(50 + x * 42).toFixed(1)}%`);
-      el.style.setProperty("--ly", `${(42 + y * 42).toFixed(1)}%`);
+      el.style.setProperty("--rx", `${(-y * 7).toFixed(2)}deg`);
+      el.style.setProperty("--ry", `${(x * 10).toFixed(2)}deg`);
     };
     const mover = (e: PointerEvent) => {
       x = Math.max(-1, Math.min(1, (e.clientX / window.innerWidth) * 2 - 1));
@@ -94,7 +92,6 @@ export function LogoImpacto({ className = "" }: { className?: string }) {
       <div className="li-inclina">
         <div className="li-corpo">
           <LogoAnimada entrada className="w-full" />
-          <span aria-hidden className="li-brilho" />
         </div>
       </div>
 

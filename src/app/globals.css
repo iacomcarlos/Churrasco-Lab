@@ -797,16 +797,13 @@ button {
   --lx: 50%;
   --ly: 35%;
 }
-.logo-impacto > span,
-.logo-impacto .li-brilho {
+.logo-impacto > span {
   position: absolute;
   pointer-events: none;
 }
 .logo-impacto .li-inclina {
   transform: rotateX(var(--rx)) rotateY(var(--ry));
   transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  transform-style: preserve-3d;
-  will-change: transform;
 }
 /* sem mouse: balança sozinha, devagar */
 @media not ((hover: hover) and (pointer: fine)) {
@@ -820,17 +817,6 @@ button {
     li-chega 2.2s cubic-bezier(0.16, 1, 0.3, 1) both,
     li-pega 0.9s ease-out 2.2s both;
 }
-/* reflexo que acompanha o mouse, recortado no formato da logo pelo modo de mistura */
-.logo-impacto .li-brilho {
-  inset: 0;
-  background: radial-gradient(circle at var(--lx) var(--ly), rgb(255 236 200 / 0.34), transparent 42%);
-  mix-blend-mode: overlay;
-  opacity: 0;
-  transition: opacity 0.6s;
-}
-.logo-impacto[data-fase="viva"] .li-brilho {
-  opacity: 1;
-}
 /* calor atrás da logo */
 .logo-impacto .li-aura {
   inset: -22%;
@@ -840,7 +826,7 @@ button {
   filter: blur(6px);
 }
 .logo-impacto[data-fase="entrada"] .li-aura {
-  animation: li-aura-acende 1.6s ease-out 1.5s both;
+  animation: li-aura-acende 1.6s ease-out 1.5s forwards;
 }
 .logo-impacto[data-fase="viva"] .li-aura {
   opacity: 0.75;
@@ -855,7 +841,7 @@ button {
   mix-blend-mode: screen;
 }
 .logo-impacto[data-fase="entrada"] .li-clarao {
-  animation: li-clarao 1s ease-out 2.2s both;
+  animation: li-clarao 1s ease-out 2.2s forwards;
 }
 .logo-impacto .li-onda {
   inset: 8%;
@@ -867,7 +853,7 @@ button {
   opacity: 0;
 }
 .logo-impacto[data-fase="entrada"] .li-onda {
-  animation: li-onda 1.3s cubic-bezier(0.1, 0.7, 0.3, 1) 2.22s both;
+  animation: li-onda 1.3s cubic-bezier(0.1, 0.7, 0.3, 1) 2.22s forwards;
 }
 .logo-impacto[data-fase="entrada"] .li-onda-2 {
   animation-delay: 2.42s;
@@ -893,7 +879,7 @@ button {
   transform: rotate(var(--ang)) translateX(0);
 }
 .logo-impacto[data-fase="entrada"] .li-estilhacos i {
-  animation: li-estilhaco var(--dur) cubic-bezier(0.1, 0.75, 0.25, 1) 2.22s both;
+  animation: li-estilhaco var(--dur) cubic-bezier(0.1, 0.75, 0.25, 1) 2.22s forwards;
 }
 /* brasas subindo sem parar */
 .logo-impacto .li-brasas i {

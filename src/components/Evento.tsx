@@ -186,7 +186,7 @@ function Audio() {
 }
 
 /** SOBRE O EVENTO: o que é, em poucas linhas, com áudio oficial, vídeo e fotos reais da edição passada e as atrações deste ano. */
-export function Evento() {
+export function Evento({ semAtracoes = false }: { semAtracoes?: boolean }) {
   const root = useRef<HTMLElement>(null);
   useRevelar(root);
   const s = textos.sobre;
@@ -212,6 +212,7 @@ export function Evento() {
       </div>
 
       {/* atrações desta edição (flyer oficial) */}
+      {!semAtracoes && (
       <ul className="mx-auto mt-12 grid max-w-[1040px] grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-4 lg:grid-cols-6">
         {s.atracoes.map((a, i) => {
           const Icone = icones[a.id as keyof typeof icones];
@@ -224,6 +225,7 @@ export function Evento() {
           );
         })}
       </ul>
+      )}
 
       {/* fotos da edição passada */}
       <div className="mx-auto mt-12 max-w-[1040px]">

@@ -228,7 +228,7 @@ export const textos = {
   /** Site imersivo: frase da abertura e os espaços do mapa (flyer oficial da 2ª edição). */
   imersivo: {
     manifesto: "Muito mais que um evento de churrasco. Uma experiência que une sabor, conhecimento e oportunidades.",
-    espacosAviso: "Imagens da edição passada.",
+    mapaAviso: "Maquete ilustrativa. A posição real de cada espaço na praça será divulgada pela organização. Fotos da edição passada.",
     espacos: [
       { id: "palco", titulo: "Palco das aulas-show", n: "6", texto: "Seis aulas-show com pitmasters no palco, nos dois dias de evento.", img: "/espacos/palco.webp", x: 50, y: 20, acao: "aulas" },
       { id: "paineis", titulo: "Painéis de conversa", n: "2", texto: "Dois painéis de conversa sobre o universo do churrasco e do empreendedorismo.", img: "/espacos/paineis.webp", x: 20, y: 36, acao: "" },

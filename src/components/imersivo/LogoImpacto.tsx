@@ -12,9 +12,9 @@ const ESTILHACOS = Array.from({ length: 44 }, (_, i) => ({ ang: (i / 44) * 360 +
 const BRASAS = Array.from({ length: 22 }, (_, i) => ({ x: 6 + R[i + 200] * 88, dur: 2.4 + R[i + 30] * 3, atraso: R[i + 80] * 5, dx: (R[i + 120] - 0.5) * 34, tam: 0.6 + R[i + 170] * 1.1 }));
 
 /**
- * Entrada de impacto da logo (versão imersiva):
- *  1. a logo vem de longe, desfocada e escura, e "bate" no lugar;
- *  2. no impacto: clarão, duas ondas de choque, estilhaços de brasa em todas as direções e um tranco;
+ * Logo da versão imersiva. Ela nasce NO LUGAR e no tamanho certo (sem vir de longe):
+ *  1. as palavras acendem e o fogo sobe por trás delas (a entrada original da logo);
+ *  2. quando o fogo termina de subir, ele "pega": um clarão, uma onda de calor e brasas saltando;
  *  3. depois fica viva: labaredas ondulando de verdade (distorção de calor), brasas subindo sem parar
  *     e a peça inteira inclina acompanhando o mouse (no celular, balança sozinha, devagar).
  * A logo é sempre mexida inteira, nunca peça por peça, para não aparecer emenda entre as camadas.
@@ -39,7 +39,7 @@ export function LogoImpacto({ className = "" }: { className?: string }) {
     Promise.race([prontas, new Promise((ok) => window.setTimeout(ok, 2500))]).then(() => {
       if (!vivo) return;
       setFase("entrada");
-      fim = window.setTimeout(() => vivo && setFase("viva"), 2600);
+      fim = window.setTimeout(() => vivo && setFase("viva"), 4000);
     });
     return () => {
       vivo = false;
@@ -93,7 +93,7 @@ export function LogoImpacto({ className = "" }: { className?: string }) {
 
       <div className="li-inclina">
         <div className="li-corpo">
-          <LogoAnimada className="w-full" />
+          <LogoAnimada entrada className="w-full" />
           <span aria-hidden className="li-brilho" />
         </div>
       </div>

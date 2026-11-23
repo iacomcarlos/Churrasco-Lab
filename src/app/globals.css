@@ -802,9 +802,6 @@ button {
   position: absolute;
   pointer-events: none;
 }
-.js .logo-impacto[data-fase="espera"] .li-corpo {
-  opacity: 0;
-}
 .logo-impacto .li-inclina {
   transform: rotateX(var(--rx)) rotateY(var(--ry));
   transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
@@ -817,10 +814,11 @@ button {
     animation: li-balanca 7s ease-in-out infinite;
   }
 }
+/* a logo cresce só um pouco enquanto acende e dá um pulso quando o fogo pega (2,2 s) */
 .logo-impacto[data-fase="entrada"] .li-corpo {
   animation:
-    li-bate 0.9s cubic-bezier(0.7, 0, 0.84, 0) both,
-    li-tranco 0.5s cubic-bezier(0.3, 0.7, 0.4, 1) 0.9s both;
+    li-chega 2.2s cubic-bezier(0.16, 1, 0.3, 1) both,
+    li-pega 0.9s ease-out 2.2s both;
 }
 /* reflexo que acompanha o mouse, recortado no formato da logo pelo modo de mistura */
 .logo-impacto .li-brilho {
@@ -842,7 +840,7 @@ button {
   filter: blur(6px);
 }
 .logo-impacto[data-fase="entrada"] .li-aura {
-  animation: li-aura-acende 1.4s ease-out 0.85s both;
+  animation: li-aura-acende 1.6s ease-out 1.5s both;
 }
 .logo-impacto[data-fase="viva"] .li-aura {
   opacity: 0.75;
@@ -850,14 +848,14 @@ button {
 }
 /* clarão e ondas de choque do impacto */
 .logo-impacto .li-clarao {
-  inset: -60%;
+  inset: -35%;
   border-radius: 50%;
   background: radial-gradient(closest-side, rgb(255 244 214 / 0.95), rgb(255 160 50 / 0.55) 32%, transparent 68%);
   opacity: 0;
   mix-blend-mode: screen;
 }
 .logo-impacto[data-fase="entrada"] .li-clarao {
-  animation: li-clarao 0.85s ease-out 0.86s both;
+  animation: li-clarao 1s ease-out 2.2s both;
 }
 .logo-impacto .li-onda {
   inset: 8%;
@@ -869,11 +867,11 @@ button {
   opacity: 0;
 }
 .logo-impacto[data-fase="entrada"] .li-onda {
-  animation: li-onda 1.1s cubic-bezier(0.1, 0.7, 0.3, 1) 0.88s both;
+  animation: li-onda 1.3s cubic-bezier(0.1, 0.7, 0.3, 1) 2.22s both;
 }
 .logo-impacto[data-fase="entrada"] .li-onda-2 {
-  animation-delay: 1.06s;
-  animation-duration: 1.4s;
+  animation-delay: 2.42s;
+  animation-duration: 1.6s;
 }
 /* estilhaços de brasa: cada um gira para o seu ângulo e voa para fora */
 .logo-impacto .li-estilhacos,
@@ -895,7 +893,7 @@ button {
   transform: rotate(var(--ang)) translateX(0);
 }
 .logo-impacto[data-fase="entrada"] .li-estilhacos i {
-  animation: li-estilhaco var(--dur) cubic-bezier(0.1, 0.75, 0.25, 1) 0.9s both;
+  animation: li-estilhaco var(--dur) cubic-bezier(0.1, 0.75, 0.25, 1) 2.22s both;
 }
 /* brasas subindo sem parar */
 .logo-impacto .li-brasas i {
@@ -918,39 +916,26 @@ button {
 .logo-impacto[data-fase="viva"] .logo [class*="lg-vapor"] {
   filter: url(#li-calor);
 }
-@keyframes li-bate {
-  0% {
-    opacity: 0;
-    transform: scale(3.1) rotate(-7deg);
-    filter: blur(20px) brightness(0.2);
+@keyframes li-chega {
+  from {
+    transform: scale(0.93);
   }
-  30% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) rotate(0deg);
-    filter: blur(0) brightness(1);
+  to {
+    transform: none;
   }
 }
-@keyframes li-tranco {
+@keyframes li-pega {
   0% {
-    transform: scale(0.9);
-    filter: brightness(2.4) saturate(0.7);
+    transform: none;
+    filter: brightness(1);
   }
-  22% {
-    transform: scale(1.06) translate(-1.2%, 0.8%);
-    filter: brightness(1.7);
-  }
-  44% {
-    transform: scale(0.985) translate(0.9%, -0.5%);
-  }
-  66% {
-    transform: scale(1.012) translate(-0.4%, 0.2%);
+  18% {
+    transform: scale(1.045);
+    filter: brightness(1.55) saturate(1.1);
   }
   100% {
     transform: none;
-    filter: brightness(1) saturate(1);
+    filter: brightness(1);
   }
 }
 @keyframes li-clarao {
@@ -968,13 +953,13 @@ button {
 }
 @keyframes li-onda {
   0% {
-    opacity: 0.95;
-    transform: scale(0.35);
-    border-width: 5px;
+    opacity: 0.8;
+    transform: scale(0.7);
+    border-width: 4px;
   }
   100% {
     opacity: 0;
-    transform: scale(2.9);
+    transform: scale(1.9);
     border-width: 1px;
   }
 }

@@ -46,7 +46,7 @@ export function Entrada() {
         <div className="flex w-full max-w-[560px] flex-col items-center px-5 text-center [opacity:calc(1-var(--p,0)*6)] [transform:scale(calc(1+var(--p,0)*1.6))] group-data-[fase=b]:pointer-events-none group-data-[fase=c]:pointer-events-none motion-reduce:![opacity:1] motion-reduce:![transform:none]">
           <h1 className="sr-only">{evento.nome}</h1>
           <LogoImpacto className="w-[min(72vw,34svh)] max-w-[400px]" />
-          <div className="mt-[2svh] flex items-center justify-center gap-4 [animation:surge_0.9s_var(--ease-expo)_1.3s_both]">
+          <div className="mt-[2svh] flex items-center justify-center gap-4 [animation:surge_0.9s_var(--ease-expo)_0.9s_both]">
             <CalendarDays className="size-[clamp(46px,13vw,62px)] shrink-0 text-brasa" strokeWidth={1.5} aria-hidden />
             <span aria-hidden className="h-[clamp(54px,15vw,72px)] w-px bg-brasa/60" />
             <p className="text-left">
@@ -54,18 +54,18 @@ export function Entrada() {
               <span className="espacado mt-1.5 block text-[clamp(13px,3.8vw,19px)]">de novembro</span>
             </p>
           </div>
-          <p className="mt-[2.2svh] inline-flex items-center gap-2.5 rounded-full border-[1.5px] border-brasa/75 bg-fundo/60 px-5 py-2.5 text-[clamp(15.5px,4.3vw,19px)] font-semibold [animation:surge_0.9s_var(--ease-expo)_1.42s_both]">
+          <p className="mt-[2.2svh] inline-flex items-center gap-2.5 rounded-full border-[1.5px] border-brasa/75 bg-fundo/60 px-5 py-2.5 text-[clamp(15.5px,4.3vw,19px)] font-semibold [animation:surge_0.9s_var(--ease-expo)_1.05s_both]">
             <MapPin className="size-[1.2em] shrink-0 fill-brasa text-fundo" strokeWidth={1.8} aria-hidden />
             {evento.local.nome} · {evento.local.bairro}
           </p>
-          <p className="espacado mt-[2svh] text-[clamp(13px,3.6vw,15.5px)] font-semibold text-ambar [animation:surge_0.9s_var(--ease-expo)_1.54s_both]">{evento.entrada}</p>
+          <p className="espacado mt-[2svh] text-[clamp(13px,3.6vw,15.5px)] font-semibold text-ambar [animation:surge_0.9s_var(--ease-expo)_1.2s_both]">{evento.entrada}</p>
           <a
             href={`#${chamada.id}`}
             onClick={(e) => {
               e.preventDefault();
               irPara(chamada.id, "abertura");
             }}
-            className="btn btn-brasa mt-[1.6svh] w-full max-w-[380px] !min-h-[60px] !text-[clamp(17px,4.8vw,20px)] [animation:surge_0.9s_var(--ease-expo)_1.66s_both]"
+            className="btn btn-brasa mt-[1.6svh] w-full max-w-[380px] !min-h-[60px] !text-[clamp(17px,4.8vw,20px)] [animation:surge_0.9s_var(--ease-expo)_1.35s_both]"
           >
             {chamada.texto}
             <ArrowRight className="size-[1.15em]" strokeWidth={2.8} aria-hidden />

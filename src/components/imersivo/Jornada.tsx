@@ -92,105 +92,138 @@ export function Entrada() {
   );
 }
 
-/* ───────────────── 2. Mapa: os espaços do evento para explorar ───────────────── */
+/* ───────────────── 2. Espaços: um baralho de fotos que a rolagem vai virando ───────────────── */
 
 const iconesEspaco = { palco: Flame, paineis: MessagesSquare, podcast: Mic, churrasco: Store, solidaria: HeartHandshake, praca: Utensils, shows: Music } as const;
 
-export function Mapa() {
-  const root = useRef<HTMLElement>(null);
-  const [sel, setSel] = useState<string>("palco");
-  useProgresso(root, "passagem");
-  useRevelar(root);
-  const { espacos, mapaAviso } = textos.imersivo;
-  const atual = espacos.find((e) => e.id === sel) ?? espacos[0];
+export function Espacos() {
+  const cena = useRef<HTMLElement>(null);
+  const [idx, setIdx] = useState(0);
+  useProgresso(cena, "fixo");
+  const { espacos, espacosAviso } = textos.imersivo;
+  const N = espacos.length;
+
+  /* qual carta está por cima: acompanha a mesma conta do CSS (a carta sai nos últimos 40% do seu trecho) */
+  useEffect(() => {
+    const el = cena.current;
+    if (!el) return;
+    let raf = 0;
+    const medir = () => {
+      raf = 0;
+      const r = el.getBoundingClientRect();
+      const p = Math.min(1, Math.max(0, -r.top / Math.max(1, r.height - window.innerHeight)));
+      setIdx(Math.min(N - 1, Math.floor(p * N + 0.2)));
+    };
+    const on = () => {
+      if (!raf) raf = requestAnimationFrame(medir);
+    };
+    medir();
+    window.addEventListener("scroll", on, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", on);
+      cancelAnimationFrame(raf);
+    };
+  }, [N]);
+
+  /** Leva a rolagem até a carta escolhida (toque na carta, nas setas ou nos ícones). */
+  const ir = (i: number, origem: string) => {
+    const el = cena.current;
+    if (!el) return;
+    const alvo = Math.min(N - 1, Math.max(0, i));
+    const topo = el.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo({ top: topo + ((alvo + 0.12) / N) * (el.offsetHeight - window.innerHeight), behavior: "smooth" });
+    track("espaco_abrir", { espaco: espacos[alvo].id, origem });
+  };
+
+  const atual = espacos[idx];
   const Icone = iconesEspaco[atual.id as keyof typeof iconesEspaco];
-
   return (
-    <section id="mapa" ref={root} className="relative overflow-hidden bg-white/[0.022] px-5 py-20 sm:py-24">
-      <TituloSecao frase="Explore" titulo="O que te espera na praça" apoio="Toque nos pontos para conhecer cada espaço." />
+    <section id="espacos" ref={cena} style={{ height: `${100 + N * 58}svh` }} className="relative bg-white/[0.022] motion-reduce:!h-auto">
+      {/* sem animação: lista simples */}
+      <div className="hidden px-5 py-20 motion-reduce:block">
+        <TituloSecao frase="Explore" titulo="O que te espera na praça" />
+        <ul className="mx-auto mt-8 grid max-w-[1040px] grid-cols-2 gap-3 sm:grid-cols-4">
+          {espacos.map((e) => (
+            <li key={e.id} className="cartao overflow-hidden !p-0">
+              <img src={e.img} alt="" width={720} height={900} loading="lazy" className="aspect-[4/5] w-full object-cover" />
+              <p className="px-3 pt-3 text-[14.5px] font-extrabold">{e.titulo}</p>
+              <p className="px-3 pt-1 pb-4 text-[13px] text-suave">{e.texto}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
 
-      <div className="mx-auto mt-10 grid max-w-[1040px] grid-cols-1 items-center gap-8 lg:grid-cols-[1.25fr_1fr] lg:gap-12">
-        {/* a praça vista de cima: chega inclinada e deita conforme a rolagem */}
-        <div className="[perspective:1100px]">
-          <div
-            role="group"
-            aria-label="Mapa ilustrativo dos espaços do evento"
-            className="relative mx-auto aspect-[4/4.4] w-full max-w-[560px] origin-bottom rounded-[32px] border border-[rgb(255_190_130/0.2)] bg-[radial-gradient(ellipse_at_50%_45%,#2c1b10_0%,#170e09_70%)] shadow-[0_40px_90px_-40px_rgb(244_122_18/0.6)] [transform:rotateX(calc((1-min(1,var(--p,1)*2.6))*52deg))_scale(calc(0.86+min(1,var(--p,1)*2.6)*0.14))] motion-reduce:![transform:none]"
-          >
-            <svg viewBox="0 0 400 440" aria-hidden className="absolute inset-0 size-full" fill="none">
-              {/* caminhos da praça */}
-              <ellipse cx="200" cy="228" rx="150" ry="168" stroke="rgb(255 190 130 / 0.16)" strokeWidth="1.5" strokeDasharray="3 7" />
-              <path d="M200 60V400M60 228H340" stroke="rgb(255 190 130 / 0.1)" strokeWidth="1.5" strokeDasharray="3 7" />
-              {/* palco */}
-              <path d="M150 56h100l14 44H136z" fill="rgb(244 122 18 / 0.16)" stroke="rgb(244 122 18 / 0.55)" strokeWidth="1.5" />
-              {/* fileiras de estandes */}
-              {[0, 1, 2, 3, 4].map((i) => (
-                <g key={i}>
-                  <rect x={48 + i * 20} y={302 - i * 9} width="15" height="15" rx="3.5" fill="rgb(255 171 51 / 0.14)" stroke="rgb(255 171 51 / 0.4)" />
-                  <rect x={337 - i * 20} y={302 - i * 9} width="15" height="15" rx="3.5" fill="rgb(255 171 51 / 0.14)" stroke="rgb(255 171 51 / 0.4)" />
-                </g>
-              ))}
-              {/* mesas da praça de alimentação */}
-              {[
-                [176, 250], [200, 258], [224, 250], [188, 274], [212, 274],
-              ].map(([x, y], i) => (
-                <circle key={i} cx={x} cy={y} r="5" fill="rgb(255 190 130 / 0.16)" stroke="rgb(255 190 130 / 0.35)" />
-              ))}
-              {/* brilho da brasa no centro */}
-              <circle cx="200" cy="228" r="46" fill="url(#brasa-mapa)" />
-              <defs>
-                <radialGradient id="brasa-mapa">
-                  <stop offset="0" stopColor="#f47a12" stopOpacity="0.32" />
-                  <stop offset="1" stopColor="#f47a12" stopOpacity="0" />
-                </radialGradient>
-              </defs>
-            </svg>
+      <div className="sticky top-0 flex h-[100svh] flex-col overflow-hidden pt-[70px] pb-[96px] md:pb-6 motion-reduce:hidden">
+        <header className="shrink-0 px-5 text-center">
+          <p className="manuscrito text-[clamp(26px,7.4vw,40px)] leading-none">Explore</p>
+          <Rabisco className="mx-auto -mt-0.5 w-[110px]" />
+          <h2 className="titulo mt-2 text-[clamp(21px,6vw,40px)]">O que te espera na praça</h2>
+        </header>
 
-            {espacos.map((e) => {
-              const I = iconesEspaco[e.id as keyof typeof iconesEspaco];
-              const ativo = e.id === sel;
-              return (
-                <button
-                  key={e.id}
-                  type="button"
-                  aria-pressed={ativo}
-                  onClick={() => {
-                    setSel(e.id);
-                    track("mapa_espaco", { espaco: e.id });
-                  }}
-                  style={{ left: `${e.x}%`, top: `${e.y}%` }}
-                  className="group/p absolute flex w-[104px] -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-1.5 text-center"
-                >
-                  <span className={`relative grid size-[48px] place-items-center rounded-full border-[1.5px] transition-[background-color,border-color,color,transform] duration-300 ${ativo ? "scale-110 border-brasa bg-brasa text-tinta" : "border-brasa/70 bg-fundo/85 text-brasa group-hover/p:bg-brasa/20"}`}>
-                    {!ativo && <span aria-hidden className="absolute inset-0 rounded-full border border-brasa/60 [animation:pulsa-ponto_2.4s_ease-out_infinite] motion-reduce:hidden" />}
-                    <I className="size-[22px]" strokeWidth={1.9} aria-hidden />
-                  </span>
-                  <span className={`text-[11px] leading-[1.15] font-bold tracking-[-0.01em] sm:text-[12.5px] ${ativo ? "text-ambar" : "text-texto/90"}`}>{e.titulo}</span>
-                </button>
-              );
-            })}
+        <div className="mx-auto flex min-h-0 w-full max-w-[980px] flex-1 flex-col items-center justify-center gap-[4.2svh] px-5 lg:flex-row lg:gap-16">
+          {/* o baralho */}
+          <div className="baralho relative aspect-[4/5] w-[min(66vw,calc(35svh*0.8))] shrink-0 lg:w-[min(380px,calc(62svh*0.8))]" style={{ ["--n" as string]: N }}>
+            {espacos.map((e, i) => (
+              <button
+                key={e.id}
+                type="button"
+                tabIndex={i === idx ? 0 : -1}
+                aria-label={i === N - 1 ? e.titulo : `${e.titulo}. Tocar para ver o próximo espaço.`}
+                onClick={() => ir(i === N - 1 ? 0 : i + 1, "carta")}
+                className={`carta absolute inset-0 overflow-hidden rounded-[26px] border border-[rgb(255_190_130/0.28)] bg-fundo shadow-[0_30px_60px_-24px_rgb(0_0_0/0.9)] ${i === N - 1 ? "ultima" : ""}`}
+                style={{ zIndex: N - i, ["--i" as string]: i, ["--giro" as string]: `${i % 2 ? 2.4 : -2.4}deg` }}
+              >
+                <img src={e.img} alt="" width={720} height={900} loading={i < 2 ? "eager" : "lazy"} className="absolute inset-0 size-full object-cover" />
+                <span aria-hidden className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[rgb(12_7_5/0.9)] to-transparent" />
+                <span className="espacado absolute top-3 left-3 rounded-full bg-fundo/80 px-3 py-1.5 text-[10.5px] font-bold text-texto backdrop-blur-sm">
+                  {i + 1} / {N}
+                </span>
+              </button>
+            ))}
           </div>
-          <p className="mx-auto mt-4 max-w-[420px] text-center text-[12px] leading-snug text-suave">{mapaAviso}</p>
+
+          {/* o espaço da carta de cima */}
+          <div className="w-full max-w-[440px] text-center lg:text-left">
+            <div key={atual.id} aria-live="polite" className="[animation:surge_0.55s_var(--ease-expo)_both]">
+              <div className="flex items-center justify-center gap-3 lg:justify-start">
+                <span className="grid size-[50px] shrink-0 place-items-center rounded-full bg-brasa text-tinta shadow-[0_10px_30px_-8px_rgb(244_122_18/0.8)] lg:size-[60px]">
+                  {atual.n ? <span className="titulo text-[23px] leading-none lg:text-[27px]">{atual.n}</span> : <Icone className="size-6 lg:size-7" strokeWidth={2} aria-hidden />}
+                </span>
+                <h3 className="titulo text-left text-[clamp(21px,6vw,34px)] leading-[1.02] text-ambar">{atual.titulo}</h3>
+              </div>
+              <p className="mx-auto mt-2.5 max-w-[26em] text-[clamp(14.5px,3.9vw,17.5px)] leading-[1.5] text-texto/85 lg:mx-0 lg:mt-4">{atual.texto}</p>
+              {atual.acao && (
+                <button type="button" onClick={() => irPara(atual.acao, "espacos")} className="mt-2 inline-flex items-center gap-1.5 text-[14.5px] font-bold text-ambar underline underline-offset-4 lg:mt-4">
+                  Ver as aulas-show <ArrowRight className="size-4" strokeWidth={2.6} aria-hidden />
+                </button>
+              )}
+            </div>
+          </div>
         </div>
 
-        {/* o espaço escolhido */}
-        <div key={atual.id} aria-live="polite" className="cartao mx-auto w-full max-w-[460px] overflow-hidden !p-0 [animation:surge_0.6s_var(--ease-expo)_both]">
-          <div className="relative aspect-[16/10] bg-fundo">
-            <img src={atual.img} alt="" width={720} height={720} loading="lazy" className="absolute inset-0 size-full object-cover" />
-            <span aria-hidden className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-[rgb(30_21_16)] to-transparent" />
-            <span className="absolute bottom-3 left-5 grid size-[54px] place-items-center rounded-full bg-brasa text-tinta shadow-[0_10px_30px_-8px_rgb(244_122_18/0.8)]">
-              {atual.n ? <span className="titulo text-[24px] leading-none">{atual.n}</span> : <Icone className="size-6" strokeWidth={2} aria-hidden />}
-            </span>
-          </div>
-          <div className="px-5 pt-3 pb-6">
-            <h3 className="titulo text-[clamp(22px,6vw,27px)]">{atual.titulo}</h3>
-            <p className="mt-2 text-[15.5px] leading-[1.55] text-texto/85">{atual.texto}</p>
-            {atual.acao && (
-              <button type="button" onClick={() => irPara(atual.acao, "mapa")} className="btn btn-linha btn-sm mt-5 w-full">
-                Ver as aulas-show <ArrowRight className="size-4" strokeWidth={2.6} aria-hidden />
-              </button>
-            )}
-          </div>
+        {/* atalhos: todos os espaços */}
+        <div className="shrink-0 px-3">
+          <ul className="mx-auto flex w-max max-w-full items-center gap-1.5 rounded-full border border-[rgb(255_190_130/0.16)] bg-fundo/70 p-1.5 backdrop-blur-sm sm:gap-2">
+            {espacos.map((e, i) => {
+              const I = iconesEspaco[e.id as keyof typeof iconesEspaco];
+              const ativo = i === idx;
+              return (
+                <li key={e.id}>
+                  <button
+                    type="button"
+                    aria-label={e.titulo}
+                    aria-pressed={ativo}
+                    title={e.titulo}
+                    onClick={() => ir(i, "atalho")}
+                    className={`grid size-[40px] place-items-center rounded-full transition-[background-color,color,transform] duration-300 sm:size-[46px] ${ativo ? "scale-105 bg-brasa text-tinta" : "text-brasa hover:bg-brasa/15"}`}
+                  >
+                    <I className="size-[19px] sm:size-[21px]" strokeWidth={1.9} aria-hidden />
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+          <p className="mt-2 text-center text-[11.5px] text-suave">Role ou toque na foto para ver o próximo · {espacosAviso}</p>
         </div>
       </div>
     </section>

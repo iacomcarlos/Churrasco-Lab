@@ -228,15 +228,15 @@ export const textos = {
   /** Site imersivo: frase da abertura e os espaços do mapa (flyer oficial da 2ª edição). */
   imersivo: {
     manifesto: "Muito mais que um evento de churrasco. Uma experiência que une sabor, conhecimento e oportunidades.",
-    mapaAviso: "Mapa ilustrativo. A posição de cada espaço na praça será divulgada pela organização.",
+    espacosAviso: "Imagens da edição passada.",
     espacos: [
-      { id: "palco", titulo: "Palco das aulas-show", n: "6", texto: "Seis aulas-show com pitmasters no palco, nos dois dias de evento.", img: "/sobre/foto-acougue.webp", x: 50, y: 20, acao: "aulas" },
-      { id: "paineis", titulo: "Painéis de conversa", n: "2", texto: "Dois painéis de conversa sobre o universo do churrasco e do empreendedorismo.", img: "/sobre/foto-aula.webp", x: 20, y: 36, acao: "" },
-      { id: "podcast", titulo: "Estúdio de podcast", n: "", texto: "Um estúdio de podcast montado dentro do evento.", img: "/sobre/edicao-passada.webp", x: 80, y: 36, acao: "" },
-      { id: "churrasco", titulo: "Estandes do churrasco", n: "15", texto: "Quinze estandes do universo do churrasco para conhecer de perto.", img: "/sobre/foto-facas.webp", x: 24, y: 64, acao: "" },
-      { id: "solidaria", titulo: "Economia solidária", n: "15", texto: "Quinze estandes de economia solidária, com produtores e empreendedores locais.", img: "/sobre/foto-bebidas.webp", x: 76, y: 64, acao: "" },
-      { id: "praca", titulo: "Praça de alimentação", n: "", texto: "Churrasco assado na hora.", img: "/sobre/foto-corte.webp", x: 50, y: 52, acao: "" },
-      { id: "shows", titulo: "Shows locais + DJ", n: "", texto: "Música ao vivo com atrações locais e DJ.", img: "/fotos/grelha-carne-celular.webp", x: 50, y: 84, acao: "" },
+      { id: "palco", titulo: "Palco das aulas-show", n: "6", texto: "Seis aulas-show com pitmasters no palco, nos dois dias de evento.", img: "/espacos/palco.webp", x: 50, y: 20, acao: "aulas" },
+      { id: "paineis", titulo: "Painéis de conversa", n: "2", texto: "Dois painéis de conversa sobre o universo do churrasco e do empreendedorismo.", img: "/espacos/paineis.webp", x: 20, y: 36, acao: "" },
+      { id: "podcast", titulo: "Estúdio de podcast", n: "", texto: "Um estúdio de podcast montado dentro do evento.", img: "/espacos/podcast.webp", x: 80, y: 36, acao: "" },
+      { id: "churrasco", titulo: "Estandes do churrasco", n: "15", texto: "Quinze estandes do universo do churrasco para conhecer de perto.", img: "/espacos/churrasco.webp", x: 24, y: 64, acao: "" },
+      { id: "solidaria", titulo: "Economia solidária", n: "15", texto: "Quinze estandes de economia solidária, com produtores e empreendedores locais.", img: "/espacos/solidaria.webp", x: 76, y: 64, acao: "" },
+      { id: "praca", titulo: "Praça de alimentação", n: "", texto: "Churrasco assado na hora.", img: "/espacos/praca.webp", x: 50, y: 52, acao: "" },
+      { id: "shows", titulo: "Shows locais + DJ", n: "", texto: "Música ao vivo com atrações locais e DJ.", img: "/espacos/shows.webp", x: 50, y: 84, acao: "" },
     ],
   },
   privacidade: "Ao se inscrever, você autoriza a organização do evento a usar seus dados para registrar a inscrição e enviar avisos.",

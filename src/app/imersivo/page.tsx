@@ -4,7 +4,7 @@ import { Evento } from "@/components/Evento";
 import { Inscricao } from "@/components/Inscricao";
 import { Local, Rodape } from "@/components/Local";
 import { Faiscas } from "@/components/Faiscas";
-import { Entrada, Mapa, Passeio } from "@/components/imersivo/Jornada";
+import { Entrada, Espacos, Passeio } from "@/components/imersivo/Jornada";
 
 /** Versão imersiva em teste: fica fora do Google e sem link no site principal até ser aprovada. */
 export const metadata: Metadata = {
@@ -21,7 +21,7 @@ export default function Page() {
       <main className="relative z-[1]">
         <Entrada />
         <Evento semAtracoes />
-        <Mapa />
+        <Espacos />
         <Passeio />
         <Inscricao />
         <Local />

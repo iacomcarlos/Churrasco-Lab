@@ -25,7 +25,7 @@ export default function Page() {
         <Mapa3D />
         <Passeio />
         <Inscricao />
-        <Local />
+        <Local mapa3d />
       </main>
       <Rodape />
       <BotaoFixo />

@@ -1,6 +1,7 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import { CalendarDays, MapPin, Navigation, Share2, Ticket } from "lucide-react";
 import { evento, links } from "@/config/evento";
 import { TituloSecao } from "@/components/Pecas";
@@ -9,11 +10,25 @@ import { useRevelar } from "@/lib/revelar";
 import { compartilhar } from "@/lib/share";
 import { track } from "@/lib/analytics";
 
+/* o mapa 3D real só é baixado quando a seção está chegando na tela */
+const MapaReal3D = dynamic(() => import("@/components/MapaReal3D"), { ssr: false });
+
 /** LOCAL: onde, quando e o botão de rota. Sem número, CEP ou estacionamento inventado. */
-export function Local() {
+export function Local({ mapa3d = false }: { mapa3d?: boolean }) {
   const root = useRef<HTMLElement>(null);
   const [mapa, setMapa] = useState(false);
+  const [perto, setPerto] = useState(false);
+  const [sem3d, setSem3d] = useState(false);
+  const semSuporte = useCallback(() => setSem3d(true), []);
   useRevelar(root);
+  useEffect(() => {
+    const el = root.current;
+    if (!mapa3d || !el || !("IntersectionObserver" in window)) return;
+    const io = new IntersectionObserver(([x]) => x.isIntersecting && (setPerto(true), io.disconnect()), { rootMargin: "600px 0px" });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [mapa3d]);
+  const em3d = mapa3d && !sem3d;
   return (
     <section id="local" ref={root} className="relative bg-white/[0.022] px-5 py-20 sm:py-24">
       <TituloSecao frase="Te esperamos" titulo={evento.local.nome} apoio={`${evento.local.bairro} · ${evento.local.uf}`} />
@@ -30,8 +45,10 @@ export function Local() {
       </ul>
 
       {/* mapa: só carrega quando a pessoa pede (página leve) */}
-      <div data-rev className="cartao relative mx-auto mt-8 aspect-[4/3] max-w-[720px] overflow-hidden sm:aspect-[16/9]">
-        {mapa ? (
+      <div data-rev className={`cartao relative mx-auto mt-8 overflow-hidden ${em3d ? "aspect-[4/4.6] max-w-[1040px] sm:aspect-[16/9]" : "aspect-[4/3] max-w-[720px] sm:aspect-[16/9]"}`}>
+        {em3d ? (
+          perto && <MapaReal3D semSuporte={semSuporte} />
+        ) : mapa ? (
           <iframe title={`Mapa: ${evento.local.buscaMapa}`} src={links.mapaEmbed} loading="lazy" referrerPolicy="no-referrer-when-downgrade" className="absolute inset-0 size-full border-0" allowFullScreen />
         ) : (
           <button
@@ -49,6 +66,8 @@ export function Local() {
           </button>
         )}
       </div>
+
+      {em3d && <p data-rev className="mx-auto mt-3 max-w-[520px] text-center text-[12px] leading-snug text-suave">Arraste para girar e inclinar. No celular, use dois dedos para mover o mapa.</p>}
 
       <div data-rev className="mx-auto mt-6 grid max-w-[720px] gap-2.5 sm:grid-cols-2">
         <a href={links.comoChegar} target="_blank" rel="noopener noreferrer" onClick={() => track("mapa_click", { local: "local" })} className="btn btn-brasa">

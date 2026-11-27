@@ -49,8 +49,10 @@ export function Mapa3D() {
       ([x]) => {
         if (!x.isIntersecting || cena.current) return;
         perto.disconnect();
-        import("./cena3d")
-          .then(({ criarCena }) => {
+        /* os nomes escritos na maquete usam as letras do site: espera elas carregarem (no máximo 2,5 s) */
+        const letras = Promise.race([document.fonts?.ready ?? Promise.resolve(), new Promise((ok) => window.setTimeout(ok, 2500))]);
+        Promise.all([import("./cena3d"), letras])
+          .then(([{ criarCena }]) => {
             if (!vivo) return;
             cena.current = criarCena({
               canvas: cv,
@@ -58,6 +60,7 @@ export function Mapa3D() {
               pinos: pinos.current,
               aoEscolher: (id) => escolherRef.current(id, "maquete"),
               calmo: window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+              fonte: window.getComputedStyle(document.body).fontFamily || "sans-serif",
             });
             cena.current.ativo(visivel && !document.hidden);
             setEstado("pronto");
@@ -89,7 +92,7 @@ export function Mapa3D() {
 
   return (
     <section id="mapa" ref={root} className="relative bg-white/[0.022] px-4 py-20 sm:px-5 sm:py-24">
-      <TituloSecao frase="Explore" titulo="O que te espera no evento" apoio="Arraste para girar a tenda e toque nos espaços." />
+      <TituloSecao frase="Explore" titulo="O que te espera no evento" apoio="A planta do evento em 3D, com o nome e o tamanho de cada espaço. Arraste para girar e toque para chegar perto." />
 
       {estado === "sem3d" ? (
         <ul className="mx-auto mt-10 grid max-w-[1040px] grid-cols-2 gap-3 sm:grid-cols-4">
@@ -103,7 +106,7 @@ export function Mapa3D() {
         </ul>
       ) : (
         <div data-rev className="relative mx-auto mt-8 max-w-[1120px]">
-          <div ref={caixa} className="relative h-[min(62svh,540px)] min-h-[400px] overflow-hidden rounded-[30px] border border-[rgb(255_190_130/0.2)] bg-[radial-gradient(ellipse_at_50%_60%,#3a2112_0%,#1a0f09_55%,#100a07_100%)] shadow-[0_40px_90px_-40px_rgb(244_122_18/0.55)] lg:h-[660px]">
+          <div ref={caixa} className="relative isolate h-[min(66svh,560px)] min-h-[400px] overflow-hidden rounded-[30px] border border-[rgb(255_190_130/0.2)] bg-[radial-gradient(ellipse_at_50%_60%,#3a2112_0%,#1a0f09_55%,#100a07_100%)] shadow-[0_40px_90px_-40px_rgb(244_122_18/0.55)] lg:h-[660px]">
             <canvas ref={canvas} aria-label="Maquete 3D da tenda do evento" className={`absolute inset-0 size-full cursor-grab touch-pan-y transition-opacity duration-700 active:cursor-grabbing ${estado === "pronto" ? "opacity-100" : "opacity-0"}`} />
             {estado === "espera" && <p className="espacado absolute inset-0 grid place-items-center text-[12px] font-bold text-suave">Montando a tenda...</p>}
 
@@ -124,9 +127,9 @@ export function Mapa3D() {
                   className={`group/p absolute top-0 left-0 flex flex-col items-center opacity-0 transition-opacity duration-300 will-change-transform ${estado === "pronto" ? "" : "invisible"}`}
                 >
                   <span className={`mb-1 rounded-full px-2.5 py-1 text-[11px] leading-none font-extrabold whitespace-nowrap shadow-[0_6px_18px_-6px_rgb(0_0_0/0.9)] sm:text-[12.5px] ${ativo ? "bg-brasa text-tinta" : "bg-fundo/90 text-texto opacity-0 transition-opacity duration-200 group-hover/p:opacity-100 group-focus-visible/p:opacity-100 max-sm:hidden"}`}>{e.titulo}</span>
-                  <span className={`relative grid size-[38px] place-items-center rounded-full border-[1.5px] transition-[background-color,color,transform] duration-300 sm:size-[42px] ${ativo ? "scale-110 border-brasa bg-brasa text-tinta" : "border-brasa bg-fundo/90 text-brasa group-hover/p:bg-brasa group-hover/p:text-tinta"}`}>
+                  <span className={`relative grid size-[30px] place-items-center rounded-full border-[1.5px] transition-[background-color,color,transform] duration-300 sm:size-[40px] ${ativo ? "scale-110 border-brasa bg-brasa text-tinta" : "border-brasa bg-fundo/90 text-brasa group-hover/p:bg-brasa group-hover/p:text-tinta"}`}>
                     {!ativo && <span aria-hidden className="absolute inset-0 rounded-full border border-brasa/70 [animation:pulsa-ponto_2.4s_ease-out_infinite] motion-reduce:hidden" />}
-                    <I className="size-[19px] sm:size-[21px]" strokeWidth={1.9} aria-hidden />
+                    <I className="size-[15px] sm:size-[20px]" strokeWidth={1.9} aria-hidden />
                   </span>
                   <span aria-hidden className={`h-3 w-px ${ativo ? "bg-brasa" : "bg-brasa/70"}`} />
                 </button>
@@ -184,7 +187,7 @@ export function Mapa3D() {
                 </span>
                 <p className="text-[14.5px] leading-snug">
                   <strong className="block text-[16px] font-extrabold">Espaços para explorar</strong>
-                  <span className="text-suave">Toque em um ponto da tenda para chegar mais perto.</span>
+                  <span className="text-suave">Tenda de 30 × 40 m (1.200 m²). Toque em um ponto para chegar mais perto.</span>
                 </p>
               </div>
             )}

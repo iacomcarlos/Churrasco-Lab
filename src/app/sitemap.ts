@@ -5,5 +5,8 @@ export const dynamic = "force-static";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   if (!SITE_URL) return [];
-  return [{ url: `${SITE_URL}/`, changeFrequency: "daily", priority: 1 }];
+  return [
+    { url: `${SITE_URL}/`, changeFrequency: "daily", priority: 1 },
+    { url: `${SITE_URL}/expositores`, changeFrequency: "weekly", priority: 0.7 },
+  ];
 }

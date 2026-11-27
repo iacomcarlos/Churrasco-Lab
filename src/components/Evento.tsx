@@ -35,7 +35,8 @@ function Video() {
 }
 
 /**
- * Áudio oficial sobre o evento, separado do vídeo.
+ * Áudio oficial sobre o evento, separado do vídeo. (A frase com a data antiga, 27 e 28/11, foi cortada
+ * do arquivo em 27/11/2026; o original está em materiais/sobre.)
  *
  * Começa sozinho quando a seção chega ao meio da tela e para quando o visitante vai para outra seção.
  * Ao sair, aparece um botão flutuante para quem quiser continuar ouvindo no resto do site.
@@ -47,7 +48,7 @@ function Audio() {
   const audio = useRef<HTMLAudioElement>(null);
   const [tocando, setTocando] = useState(false);
   const [pos, setPos] = useState(0);
-  const [dur, setDur] = useState(43);
+  const [dur, setDur] = useState(39);
   const [fora, setFora] = useState(false);
   const [dispensado, setDispensado] = useState(false);
   /* estado que os ouvintes precisam ler na hora, sem esperar o React */
@@ -140,7 +141,7 @@ function Audio() {
       </div>
       <audio
         ref={audio}
-        src="/sobre/narracao.m4a"
+        src="/sobre/audio-evento.m4a"
         preload="none"
         onPlay={() => {
           setTocando(true);

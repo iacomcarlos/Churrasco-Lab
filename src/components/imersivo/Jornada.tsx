@@ -50,8 +50,8 @@ export function Entrada() {
             <CalendarDays className="size-[clamp(46px,13vw,62px)] shrink-0 text-brasa" strokeWidth={1.5} aria-hidden />
             <span aria-hidden className="h-[clamp(54px,15vw,72px)] w-px bg-brasa/60" />
             <p className="text-left">
-              <span className="titulo block text-[clamp(46px,13.5vw,72px)] leading-[0.9]">27 e 28</span>
-              <span className="espacado mt-1.5 block text-[clamp(13px,3.8vw,19px)]">de novembro</span>
+              <span className="titulo block text-[clamp(46px,13.5vw,72px)] leading-[0.9]">{evento.diasNumeros}</span>
+              <span className="espacado mt-1.5 block text-[clamp(13px,3.8vw,19px)]">{evento.mesTexto}</span>
             </p>
           </div>
           <p className="mt-[2.2svh] inline-flex items-center gap-2.5 rounded-full border-[1.5px] border-brasa/75 bg-fundo/60 px-5 py-2.5 text-[clamp(15.5px,4.3vw,19px)] font-semibold [animation:surge_0.9s_var(--ease-expo)_1.05s_both]">

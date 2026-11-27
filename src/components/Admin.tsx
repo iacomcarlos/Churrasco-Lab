@@ -4,6 +4,7 @@ import { FileDown, FileSpreadsheet, FileText, LoaderCircle, LogOut, RefreshCw, S
 import { aulas, evento } from "@/config/evento";
 import { inscricao } from "@/config/inscricao";
 import { LogoBranca } from "@/components/Pecas";
+import { AdminExpositores } from "@/components/AdminExpositores";
 import { exportarCsv, exportarExcel, type Tabela } from "@/lib/exportar";
 
 type Lead = { criado_em: string; nome: string; whatsapp: string; email: string | null; cidade: string; aulas: string[] };
@@ -27,6 +28,7 @@ export function Admin() {
   const [busca, setBusca] = useState("");
   const [filtro, setFiltro] = useState("");
   const [atualizado, setAtualizado] = useState("");
+  const [aba, setAba] = useState<"inscritos" | "expositores">("inscritos");
 
   const buscar = async () => {
     setCarregando(true);
@@ -107,16 +109,19 @@ export function Admin() {
           <div className="flex items-center gap-4">
             <LogoBranca className="nao-imprime h-[52px] w-auto" />
             <div>
-              <h1 className="titulo text-[clamp(22px,5.5vw,30px)]">Inscritos</h1>
+              <h1 className="titulo text-[clamp(22px,5.5vw,30px)]">{aba === "inscritos" ? "Inscritos" : "Expositores"}</h1>
               <p className="text-[13.5px] text-suave">
-                {evento.nome} · atualizado às {atualizado}
+                {evento.nome}
+                {aba === "inscritos" ? ` · atualizado às ${atualizado}` : ""}
               </p>
             </div>
           </div>
           <div className="nao-imprime flex gap-2">
-            <button type="button" onClick={buscar} disabled={carregando} className="btn btn-linha btn-sm">
-              <RefreshCw className={`size-4 ${carregando ? "animate-spin" : ""}`} aria-hidden /> Atualizar
-            </button>
+            {aba === "inscritos" && (
+              <button type="button" onClick={buscar} disabled={carregando} className="btn btn-linha btn-sm">
+                <RefreshCw className={`size-4 ${carregando ? "animate-spin" : ""}`} aria-hidden /> Atualizar
+              </button>
+            )}
             <button
               type="button"
               onClick={() => {
@@ -130,6 +135,19 @@ export function Admin() {
           </div>
         </header>
 
+        {/* abas: público inscrito nas aulas e pedidos de credenciamento dos expositores */}
+        <div role="tablist" aria-label="Listas" className="nao-imprime mt-6 inline-flex rounded-full border border-[rgb(255_190_130/0.2)] bg-cartao p-1">
+          {(["inscritos", "expositores"] as const).map((a) => (
+            <button key={a} type="button" role="tab" aria-selected={aba === a} onClick={() => setAba(a)} className={`min-h-[42px] rounded-full px-5 text-[14.5px] font-extrabold transition-colors ${aba === a ? "bg-brasa text-tinta" : "text-suave hover:text-texto"}`}>
+              {a === "inscritos" ? "Inscritos" : "Expositores"}
+            </button>
+          ))}
+        </div>
+
+        {aba === "expositores" ? (
+          <AdminExpositores login={login} senha={senha} />
+        ) : (
+          <>
         {/* resumo */}
         <div className="mt-6 grid grid-cols-2 gap-2.5 sm:grid-cols-4 lg:grid-cols-8">
           <div className="cartao col-span-2 px-4 py-4">
@@ -212,6 +230,8 @@ export function Admin() {
         <p className="nao-imprime mt-4 text-[12.5px] text-suave">
           O botão PDF abre a impressão do aparelho: escolha “Salvar como PDF”. As exportações levam o que está na tela (respeitam a busca e o filtro de aula).
         </p>
+          </>
+        )}
       </div>
     </main>
   );

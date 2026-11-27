@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Admin } from "@/components/Admin";
 
 export const metadata: Metadata = {
-  title: "Inscritos | Churrasco LAB Brasília",
+  title: "Área restrita | Churrasco LAB Brasília",
   description: "Área restrita da organização.",
   robots: { index: false, follow: false },
 };

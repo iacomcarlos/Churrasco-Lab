@@ -61,3 +61,11 @@ npm run build    # gera a pasta out/ (site estático)
 Na Vercel: importe o repositório, mantenha as opções padrão e aponte o domínio `churrascolabbsb.com.br`.
 Analytics é opcional: preencha `NEXT_PUBLIC_GA_ID`, `NEXT_PUBLIC_GTM_ID` ou `NEXT_PUBLIC_META_PIXEL_ID`
 nas variáveis de ambiente (veja `.env.example`). Sem isso, nenhum script de terceiros é carregado.
+
+## Credenciamento de expositores (desde 27/11/2026)
+
+- Página: `/expositores` (`src/components/Credenciamento.tsx`). Textos e opções: `src/config/expositores.ts`.
+- Banco (Supabase, projeto "COGNUS FINANCE"): tabela `churrascolab_expositores`. A chave pública só insere; ninguém lê por ela. Limite de 3 envios por WhatsApp.
+- Arquivos (fotos, catálogo, portfólio): bucket **privado** `churrascolab-expositores`, só imagem e PDF, até 5 MB. O visitante só envia.
+- Área restrita (`/admin`, aba "Expositores"): lista pela função `churrascolab_admin_expositores` e abre cada arquivo pela Edge Function `churrascolab-arquivo`, que confere login e senha e devolve um link válido por 10 minutos.
+- A planta do evento usada no mapa 3D está em `materiais/planta` e as posições em `src/components/imersivo/cena3d.ts`.

@@ -10,15 +10,19 @@
 /** Endereço oficial do site (domínio comprado pela organização). */
 export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://churrascolabbsb.com.br").replace(/\/$/, "");
 
+/** Datas: o evento foi adiado de 27 e 28/11 para 11 e 12/12/2026 (aviso da organização em 27/11/2026). */
 export const evento = {
   nome: "Churrasco LAB Brasília 2026",
   nomeCurto: "Churrasco LAB Brasília",
   conceito: "Do fogo ao negócio",
-  datasTexto: "27 e 28 de novembro",
-  datasCurtas: "27 e 28 de nov",
+  datasTexto: "11 e 12 de dezembro",
+  /** As duas partes da data, para os títulos grandes. */
+  diasNumeros: "11 e 12",
+  mesTexto: "de dezembro",
+  datasCurtas: "11 e 12 de dez",
   ano: 2026,
-  inicio: "2026-11-27",
-  fim: "2026-11-28",
+  inicio: "2026-12-11",
+  fim: "2026-12-12",
   entrada: "Entrada gratuita",
   local: {
     nome: "Praça da Bíblia",
@@ -28,9 +32,9 @@ export const evento = {
     /** Texto usado na busca do aplicativo de mapas (sem número, CEP ou complemento inventado). */
     buscaMapa: "Praça da Bíblia, Ceilândia, Brasília - DF",
   },
-  titulo: "Churrasco LAB Brasília 2026 | 27 e 28 de Novembro",
+  titulo: "Churrasco LAB Brasília 2026 | 11 e 12 de Dezembro",
   descricao:
-    "O Churrasco LAB Brasília acontece nos dias 27 e 28 de novembro, na Praça da Bíblia, em Ceilândia. Entrada gratuita. Confira a programação das aulas-show.",
+    "O Churrasco LAB Brasília acontece nos dias 11 e 12 de dezembro, na Praça da Bíblia, em Ceilândia. Entrada gratuita. Confira a programação das aulas-show.",
   /** Realização confirmada pela organização em 21/11/2026 (régua oficial enviada). */
   realizacao: { nome: "Humanidade Diversificada e Unida", sigla: "HDU" },
   parceria: { nome: "Secretaria de Desenvolvimento Econômico, Trabalho e Renda", governo: "GDF" },
@@ -141,11 +145,12 @@ export const nomeNaProgramacao = (p: Profissional) => (p.marca ? `${p.nome} (${p
 
 /* ───────────────── Programação oficial das aulas-show ───────────────── */
 
-export type Dia = { id: string; data: string; rotulo: string; semana: string; semanaCurta: string; diaMes: string };
+/** `horario` = funcionamento do evento no dia (planta do evento, versão 6, enviada em 27/11/2026). */
+export type Dia = { id: string; data: string; rotulo: string; semana: string; semanaCurta: string; diaMes: string; horario: string };
 
 export const dias: Dia[] = [
-  { id: "sexta", data: "2026-11-27", rotulo: "27 NOV", semana: "Sexta-feira", semanaCurta: "Sexta", diaMes: "27/11" },
-  { id: "sabado", data: "2026-11-28", rotulo: "28 NOV", semana: "Sábado", semanaCurta: "Sábado", diaMes: "28/11" },
+  { id: "sexta", data: "2026-12-11", rotulo: "11 DEZ", semana: "Sexta-feira", semanaCurta: "Sexta", diaMes: "11/12", horario: "18h às 22h" },
+  { id: "sabado", data: "2026-12-12", rotulo: "12 DEZ", semana: "Sábado", semanaCurta: "Sábado", diaMes: "12/12", horario: "11h às 22h" },
 ];
 
 export type Aula = {
@@ -163,12 +168,12 @@ export type Aula = {
 };
 
 export const aulas: Aula[] = [
-  { id: "burger", numero: 1, data: "2026-11-27", inicio: "18:30", fim: "19:45", tema: "Burger", profissional: "jose" },
-  { id: "tendencias", numero: 2, data: "2026-11-27", inicio: "20:00", fim: "21:15", tema: "Tendências do mercado", profissional: "jonathan" },
-  { id: "fogo-de-chao", numero: 3, data: "2026-11-28", inicio: "12:30", fim: "13:45", tema: "Fogo de chão", profissional: "jefferson" },
-  { id: "empreendedorismo", numero: 4, data: "2026-11-28", inicio: "14:15", fim: "15:30", tema: "Empreendedorismo na gastronomia", profissional: "gabrielle" },
-  { id: "defumacao", numero: 5, data: "2026-11-28", inicio: "16:00", fim: "17:15", tema: "Defumação", profissional: "pedro" },
-  { id: "tecnicas-de-grelha", numero: 6, data: "2026-11-28", inicio: "17:45", fim: "19:00", tema: "Técnicas de grelha", profissional: "andrey" },
+  { id: "burger", numero: 1, data: "2026-12-11", inicio: "18:30", fim: "19:45", tema: "Burger", profissional: "jose" },
+  { id: "tendencias", numero: 2, data: "2026-12-11", inicio: "20:00", fim: "21:15", tema: "Tendências do mercado", profissional: "jonathan" },
+  { id: "fogo-de-chao", numero: 3, data: "2026-12-12", inicio: "12:30", fim: "13:45", tema: "Fogo de chão", profissional: "jefferson" },
+  { id: "empreendedorismo", numero: 4, data: "2026-12-12", inicio: "14:15", fim: "15:30", tema: "Empreendedorismo na gastronomia", profissional: "gabrielle" },
+  { id: "defumacao", numero: 5, data: "2026-12-12", inicio: "16:00", fim: "17:15", tema: "Defumação", profissional: "pedro" },
+  { id: "tecnicas-de-grelha", numero: 6, data: "2026-12-12", inicio: "17:45", fim: "19:00", tema: "Técnicas de grelha", profissional: "andrey" },
 ];
 
 export const aulasDoDia = (data: string) => aulas.filter((a) => a.data === data);
@@ -225,21 +230,28 @@ export const textos = {
     ],
     instagram: "https://www.instagram.com/churrascolab/",
   },
-  /** Site imersivo: frase da abertura e os espaços do mapa (flyer oficial da 2ª edição). */
+  /**
+   * Site imersivo: frase da abertura e os espaços do mapa 3D.
+   * Os espaços, as medidas e as quantidades vêm da planta baixa preliminar (versão 6) enviada pela
+   * organização em 27/11/2026 (cópia em materiais/planta). A posição de cada um na maquete fica em
+   * src/components/imersivo/cena3d.ts. Sem foto oficial, o campo `img` fica vazio.
+   */
   imersivo: {
     manifesto: "Muito mais que um evento de churrasco. Uma experiência que une sabor, conhecimento e oportunidades.",
-    mapaAviso: "Maquete ilustrativa. A posição real de cada espaço na praça será divulgada pela organização. Fotos da edição passada.",
+    mapaAviso: "Maquete feita a partir da planta preliminar do evento. A disposição dos espaços ainda pode mudar até a montagem. Fotos da edição passada.",
     espacos: [
-      { id: "palco", titulo: "Palco das aulas-show", n: "6", texto: "Seis aulas-show com pitmasters no palco, nos dois dias de evento.", img: "/espacos/palco.webp", x: 50, y: 20, acao: "aulas" },
-      { id: "paineis", titulo: "Painéis de conversa", n: "2", texto: "Dois painéis de conversa sobre o universo do churrasco e do empreendedorismo.", img: "/espacos/paineis.webp", x: 20, y: 36, acao: "" },
-      { id: "podcast", titulo: "Estúdio de podcast", n: "", texto: "Um estúdio de podcast montado dentro do evento.", img: "/espacos/podcast.webp", x: 80, y: 36, acao: "" },
-      { id: "churrasco", titulo: "Estandes do churrasco", n: "15", texto: "Quinze estandes do universo do churrasco para conhecer de perto.", img: "/espacos/churrasco.webp", x: 24, y: 64, acao: "" },
-      { id: "solidaria", titulo: "Economia solidária", n: "15", texto: "Quinze estandes de economia solidária, com produtores e empreendedores locais.", img: "/espacos/solidaria.webp", x: 76, y: 64, acao: "" },
-      { id: "praca", titulo: "Praça de alimentação", n: "", texto: "Churrasco assado na hora.", img: "/espacos/praca.webp", x: 50, y: 52, acao: "" },
-      { id: "shows", titulo: "Shows locais + DJ", n: "", texto: "Música ao vivo com atrações locais e DJ.", img: "/espacos/shows.webp", x: 50, y: 84, acao: "" },
+      { id: "palco", titulo: "Palco das aulas-show", n: "6", texto: "Palco de 8 × 6 m para as seis aulas-show e os painéis de conversa, com plateia de 54 lugares.", img: "/espacos/palco.webp", acao: "aulas" },
+      { id: "arena", titulo: "Arena do fogo de chão", n: "", texto: "Aula-show de fogo de chão dentro do gradil, com o público em volta.", img: "/espacos/arena.webp", acao: "" },
+      { id: "churrasco", titulo: "Setor Churrasco", n: "15", texto: "Quinze expositores do universo do churrasco para conhecer de perto.", img: "/espacos/churrasco.webp", acao: "expositores" },
+      { id: "solidaria", titulo: "Economia Solidária", n: "15", texto: "Quinze expositores de economia solidária, com produtores e empreendedores locais.", img: "/espacos/solidaria.webp", acao: "expositores" },
+      { id: "praca", titulo: "Praça de alimentação", n: "5", texto: "Cinco pontos com churrasco assado na hora e dez mesas para sentar.", img: "/espacos/praca.webp", acao: "" },
+      { id: "bares", titulo: "Bares", n: "2", texto: "Dois bares com balcão em volta, um em cada ponta da tenda.", img: "/espacos/bares.webp", acao: "" },
+      { id: "podcast", titulo: "Estúdio de podcast", n: "", texto: "Estúdio em aquário de vidro, visível para quem chega.", img: "/espacos/podcast.webp", acao: "" },
+      { id: "insta", titulo: "Espaço instagramável", n: "", texto: "Cenografia para fotos no centro da tenda, com área livre na frente.", img: "", acao: "" },
+      { id: "entrada", titulo: "Entrada e credenciamento", n: "", texto: "Entrada pelo lado do estacionamento, com pórtico cenográfico e credenciamento ao lado. Os banheiros ficam do lado de fora, à esquerda da tenda.", img: "/espacos/entrada.webp", acao: "" },
     ],
   },
   privacidade: "Ao se inscrever, você autoriza a organização do evento a usar seus dados para registrar a inscrição e enviar avisos.",
   compartilhar: () =>
-    `Churrasco LAB Brasília 2026 🔥\n27 e 28 de novembro, na Praça da Bíblia, em Ceilândia.\nEntrada gratuita, com aulas-show.\nInscreva-se: ${SITE_URL}`,
+    `Churrasco LAB Brasília 2026 🔥\n11 e 12 de dezembro, na Praça da Bíblia, em Ceilândia.\nEntrada gratuita, com aulas-show.\nInscreva-se: ${SITE_URL}`,
 };

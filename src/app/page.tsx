@@ -4,6 +4,7 @@ import { Evento } from "@/components/Evento";
 import { Inscricao } from "@/components/Inscricao";
 import { Local, Rodape } from "@/components/Local";
 import { Faiscas } from "@/components/Faiscas";
+import { ChamadaExpositores } from "@/components/ChamadaExpositores";
 import { Entrada, Passeio } from "@/components/imersivo/Jornada";
 import { Mapa3D } from "@/components/imersivo/Mapa3D";
 
@@ -26,7 +27,7 @@ function jsonLd() {
     isAccessibleForFree: true,
     inLanguage: "pt-BR",
     url: SITE_URL,
-    image: `${SITE_URL}/og.jpg`,
+    image: `${SITE_URL}/og.jpg?v=dez`,
     location: lugar,
     organizer: { "@type": "Organization", name: evento.realizacao.nome },
     subEvent: aulas.map((a) => ({
@@ -56,6 +57,7 @@ export default function Page() {
         <Mapa3D />
         <Passeio />
         <Inscricao />
+        <ChamadaExpositores />
         <Local mapa3d />
       </main>
       <Rodape />

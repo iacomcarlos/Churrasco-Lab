@@ -1,35 +1,42 @@
 import * as THREE from "three";
 
 /**
- * A praça do evento em 3D (maquete ilustrativa, feita só com formas simples).
+ * O evento em 3D, montado a partir da PLANTA BAIXA PRELIMINAR (versão 6) enviada pela organização
+ * em 27/11/2026: tenda galpão de 30 × 40 m, com a entrada de 20 m voltada para o estacionamento.
+ * As medidas e posições abaixo saem da planta (em metros). Formas simples, sem modelos prontos.
  * Fica num arquivo separado para o navegador só baixar o 3D quando o mapa estiver chegando na tela.
  *
- * Câmera: gira em volta de um alvo. Sem espaço escolhido, mostra a praça inteira girando devagar;
- * com um espaço escolhido, voa até ele. Arrastar para os lados gira a praça.
+ * Planta → cena: x da planta (0 a 30, da esquerda para a direita) vira x - 15;
+ * y da planta (0 no fundo/backstage, 40 na entrada) vira z = y - 20. A entrada fica virada para a câmera.
+ *
+ * Câmera: gira em volta de um alvo. Sem espaço escolhido, mostra a tenda inteira girando devagar;
+ * com um espaço escolhido, voa até ele. Arrastar para os lados gira a cena.
  */
 
-export type Zona = { id: string; x: number; z: number; alt: number };
+/** `az` = de onde a câmera olha o espaço (0 = do lado da entrada); `raio` = distância. */
+export type Zona = { id: string; x: number; z: number; alt: number; az: number; raio: number; halo: number };
 
-const R = 10.6;
-const arco = (t: number) => [R * Math.sin(t), R * Math.cos(t)] as const;
+const P = (x: number, y: number) => ({ x: x - 15, z: y - 20 });
 
-/** Posição de cada espaço na maquete (x, z) e a altura do marcador. */
 export const ZONAS: Zona[] = [
-  { id: "palco", x: 0, z: -9.6, alt: 5.6 },
-  { id: "paineis", x: -9.6, z: -3.4, alt: 3.9 },
-  { id: "podcast", x: 9.6, z: -3.4, alt: 3.9 },
-  { id: "churrasco", x: arco(-1.08)[0], z: arco(-1.08)[1], alt: 3.5 },
-  { id: "solidaria", x: arco(1.08)[0], z: arco(1.08)[1], alt: 3.5 },
-  { id: "praca", x: 0, z: 0, alt: 3.2 },
-  { id: "shows", x: 0, z: 10.2, alt: 6.2 },
+  { id: "palco", ...P(14.9, 9.5), alt: 7.4, az: 0.38, raio: 27, halo: 5.6 },
+  { id: "arena", ...P(24.65, 13), alt: 4.4, az: -0.62, raio: 19, halo: 4.3 },
+  { id: "churrasco", ...P(7, 11.8), alt: 4.6, az: 0.55, raio: 27, halo: 4.6 },
+  { id: "solidaria", ...P(22.4, 27.5), alt: 4.6, az: -0.72, raio: 25, halo: 5.2 },
+  { id: "praca", ...P(4.6, 26.2), alt: 4.6, az: 0.3, raio: 27, halo: 5 },
+  { id: "bares", ...P(24.4, 19), alt: 4.6, az: -0.5, raio: 17, halo: 3.1 },
+  { id: "podcast", ...P(22.4, 36), alt: 4.6, az: -0.42, raio: 16, halo: 3.1 },
+  { id: "insta", ...P(14, 30), alt: 5, az: 0.3, raio: 17, halo: 3.4 },
+  { id: "entrada", ...P(15, 40.8), alt: 7.6, az: 0.28, raio: 26, halo: 0 },
 ];
 
 const COR = {
   chao: 0x2a1b12,
-  chao2: 0x3a2618,
+  piso: 0x3d2a1c,
   madeira: 0x6b4426,
   madeiraEscura: 0x54361f,
   ferro: 0x4a4038,
+  estrutura: 0x8a7868,
   aco: 0x8c9196,
   lona: 0xf4ece2,
   brasa: 0xf47a12,
@@ -38,7 +45,13 @@ const COR = {
   amarelo: 0xf2d21f,
   verde: 0x27452d,
   vermelho: 0xd8342a,
+  roxo: 0x8f76c9,
+  apoio: 0x5a6a85,
+  cinza: 0x6f7782,
 };
+
+const FRENTE = { "+z": 0, "+x": Math.PI / 2, "-z": Math.PI, "-x": -Math.PI / 2 } as const;
+type Lado = keyof typeof FRENTE;
 
 export type Cena = {
   focar: (id: string | null) => void;
@@ -60,7 +73,7 @@ export function criarCena(opts: {
   renderer.toneMappingExposure = 1.5;
 
   const cena = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(34, 1, 0.5, 200);
+  const camera = new THREE.PerspectiveCamera(34, 1, 1, 400);
 
   /* ── materiais e formas ── */
   const mats = new Map<string, THREE.MeshStandardMaterial>();
@@ -83,8 +96,12 @@ export function criarCena(opts: {
     return m;
   };
   const caixaG = new THREE.BoxGeometry(1, 1, 1);
-  const cilG = new THREE.CylinderGeometry(1, 1, 1, 20);
+  const cilG = new THREE.CylinderGeometry(1, 1, 1, 18);
   const esfG = new THREE.SphereGeometry(1, 12, 10);
+  /* pirâmide de base 1 × 1 e altura 1 (teto das barracas) */
+  const tetoG = new THREE.ConeGeometry(Math.SQRT1_2, 1, 4);
+  tetoG.rotateY(Math.PI / 4);
+
   const add = (pai: THREE.Object3D, geo: THREE.BufferGeometry, m: THREE.Material, x: number, y: number, z: number, sx: number, sy: number, sz: number) => {
     const o = new THREE.Mesh(geo, m);
     o.position.set(x, y, z);
@@ -94,241 +111,377 @@ export function criarCena(opts: {
   };
   const bloco = (pai: THREE.Object3D, w: number, h: number, d: number, cor: number, x: number, y: number, z: number, emissivo = 0, opacidade = 1) => add(pai, caixaG, mat(cor, emissivo, opacidade), x, y, z, w, h, d);
   const cil = (pai: THREE.Object3D, r: number, h: number, cor: number, x: number, y: number, z: number, emissivo = 0) => add(pai, cilG, mat(cor, emissivo), x, y, z, r, h, r);
-  const luz = (pai: THREE.Object3D, cor: number, forca: number, x: number, y: number, z: number, alcance = 16) => {
+  const luz = (pai: THREE.Object3D, cor: number, forca: number, x: number, y: number, z: number, alcance = 18) => {
     const l = new THREE.PointLight(cor, forca, alcance, 1.5);
     l.position.set(x, y, z);
     pai.add(l);
     return l;
   };
-  /** Cria o grupo de um espaço, já virado para o centro da praça. */
-  const grupos = new Map<string, THREE.Group>();
-  const espaco = (id: string | null, x: number, z: number) => {
+
+  /* retângulos ocupados (em metros da planta), para o público não nascer dentro das coisas */
+  const ocupado: [number, number, number, number][] = [];
+  /** Grupo posicionado pelo CENTRO na planta, com a frente virada para `lado`. `fr` × `fu` = frente × fundo. */
+  const grupo = (cx: number, cy: number, lado: Lado, fr: number, fu: number, zona?: string) => {
     const g = new THREE.Group();
-    g.position.set(x, 0, z);
-    g.rotation.y = x === 0 && z === 0 ? 0 : Math.atan2(-x, -z);
-    if (id) {
-      g.userData.zona = id;
-      grupos.set(id, g);
-    }
+    const p = P(cx, cy);
+    g.position.set(p.x, 0, p.z);
+    g.rotation.y = FRENTE[lado];
+    if (zona) g.userData.zona = zona;
     cena.add(g);
+    const deitado = lado === "+x" || lado === "-x";
+    const w = deitado ? fu : fr;
+    const d = deitado ? fr : fu;
+    ocupado.push([cx - w / 2, cy - d / 2, cx + w / 2, cy + d / 2]);
     return g;
   };
 
   /* ── luz geral: fim de tarde quente ── */
   cena.add(new THREE.HemisphereLight(0xffe2c4, 0x3a2416, 2.1));
-  const sol = new THREE.DirectionalLight(0xffcf9a, 2.6);
-  sol.position.set(9, 16, 11);
+  const sol = new THREE.DirectionalLight(0xffcf9a, 2.5);
+  sol.position.set(14, 26, 22);
   cena.add(sol);
 
-  /* ── chão da praça ── */
-  add(cena, new THREE.CylinderGeometry(15.4, 16, 0.7, 56), mat(COR.chao), 0, -0.35, 0, 1, 1, 1);
-  add(cena, new THREE.CylinderGeometry(13.2, 13.2, 0.04, 56), mat(COR.chao2), 0, 0.02, 0, 1, 1, 1);
-  const anel = (r: number, forca: number) => {
-    const a = new THREE.Mesh(new THREE.RingGeometry(r, r + 0.09, 72), new THREE.MeshBasicMaterial({ color: COR.ambar, transparent: true, opacity: forca, side: THREE.DoubleSide }));
-    a.rotation.x = -Math.PI / 2;
-    a.position.y = 0.06;
-    cena.add(a);
+  /* ── terreno, piso da tenda e as faixas de cada setor ── */
+  bloco(cena, 50, 0.7, 60, COR.chao, 0, -0.36, 3);
+  bloco(cena, 30, 0.06, 40, COR.piso, 0, 0.03, 0);
+  const faixa = (x0: number, y0: number, x1: number, y1: number, cor: number, forca: number) => {
+    const m = new THREE.Mesh(caixaG, new THREE.MeshBasicMaterial({ color: cor, transparent: true, opacity: forca, depthWrite: false }));
+    const p = P((x0 + x1) / 2, (y0 + y1) / 2);
+    m.position.set(p.x, 0.075, p.z);
+    m.scale.set(x1 - x0, 0.02, y1 - y0);
+    cena.add(m);
   };
-  anel(5.4, 0.35);
-  anel(13.1, 0.5);
-  for (let i = 0; i < 4; i++) {
-    const f = bloco(cena, 0.07, 0.02, 7.4, COR.ambar, 0, 0.06, 0, 0.5, 0.5);
-    f.rotation.y = (i * Math.PI) / 2 + Math.PI / 4;
-    f.translateZ(9.3);
+  faixa(0, 0, 10, 19.6, COR.brasa, 0.1); // setor churrasco
+  faixa(0, 20.4, 9.2, 40, 0xff6a1a, 0.16); // praça de alimentação
+  faixa(19, 20.4, 30, 38.2, COR.azul, 0.16); // economia solidária
+
+  /* ── estrutura da tenda galpão: pilares, vigas e a cumeeira (sem a lona, para ver dentro) ── */
+  {
+    const alt = 5.4;
+    const cume = 8.2;
+    for (const y of [0, 10, 20, 30, 40]) {
+      for (const x of [0, 30]) bloco(cena, 0.24, alt, 0.24, COR.estrutura, P(x, y).x, alt / 2, P(x, y).z);
+      const comp = Math.hypot(15, cume - alt);
+      const ang = Math.atan2(cume - alt, 15);
+      const e = bloco(cena, comp, 0.12, 0.12, COR.estrutura, -7.5, (alt + cume) / 2, P(0, y).z, 0, 0.35);
+      e.rotation.z = ang;
+      const d = bloco(cena, comp, 0.12, 0.12, COR.estrutura, 7.5, (alt + cume) / 2, P(0, y).z, 0, 0.35);
+      d.rotation.z = -ang;
+    }
+    for (const x of [0, 30]) bloco(cena, 0.12, 0.12, 40, COR.estrutura, P(x, 0).x, alt, 0, 0, 0.35);
+    bloco(cena, 0.12, 0.12, 40, COR.estrutura, 0, cume, 0, 0, 0.35);
+    /* lona do fundo e das laterais, bem transparente */
+    bloco(cena, 30, alt, 0.06, COR.lona, 0, alt / 2, -20, 0, 0.13);
+    for (const x of [0, 30]) bloco(cena, 0.06, alt, 40, COR.lona, P(x, 0).x, alt / 2, 0, 0, 0.07);
   }
 
   /* ── halos no chão: marcam os espaços; o escolhido acende ── */
-  const halos = new Map<string, THREE.Mesh>();
-  for (const z of ZONAS) {
-    const h = new THREE.Mesh(new THREE.RingGeometry(z.id === "praca" ? 2.3 : 3.3, z.id === "praca" ? 2.55 : 3.55, 48), new THREE.MeshBasicMaterial({ color: COR.brasa, transparent: true, opacity: 0.18, side: THREE.DoubleSide }));
+  const halos = new Map<string, THREE.Mesh[]>();
+  const halo = (id: string, x: number, z: number, r: number) => {
+    const h = new THREE.Mesh(new THREE.RingGeometry(r, r + 0.26, 56), new THREE.MeshBasicMaterial({ color: COR.brasa, transparent: true, opacity: 0.2, side: THREE.DoubleSide, depthWrite: false }));
     h.rotation.x = -Math.PI / 2;
-    h.position.set(z.x, 0.08, z.z);
+    h.position.set(x, 0.1, z);
     cena.add(h);
-    halos.set(z.id, h);
-  }
-
-  /* ── palco das aulas-show ── */
-  {
-    const g = espaco("palco", 0, -9.6);
-    bloco(g, 7.2, 0.5, 4, COR.madeiraEscura, 0, 0.25, 0);
-    bloco(g, 7.2, 3.7, 0.2, COR.ferro, 0, 2.35, -1.9);
-    bloco(g, 5.2, 1.15, 0.06, COR.brasa, 0, 3.05, -1.78, 0.9);
-    bloco(g, 7.7, 0.25, 4.5, COR.ferro, 0, 4.35, 0);
-    for (const sx of [-3.5, 3.5]) for (const sz of [-1.8, 1.8]) bloco(g, 0.18, 4.1, 0.18, COR.ferro, sx, 2.3, sz);
-    bloco(g, 3.2, 0.9, 0.9, COR.aco, -0.6, 0.95, 0.5);
-    bloco(g, 1.1, 0.75, 0.8, COR.ferro, 2.3, 0.88, 0.5);
-    bloco(g, 0.95, 0.06, 0.65, COR.brasa, 2.3, 1.28, 0.5, 1.6);
-    luz(g, 0xff8a2a, 34, 0, 3.4, 1.2);
-  }
-
-  /* ── painéis de conversa ── */
-  {
-    const g = espaco("paineis", -9.6, -3.4);
-    bloco(g, 4.6, 0.3, 3, COR.madeiraEscura, 0, 0.15, 0);
-    bloco(g, 4.6, 2.5, 0.15, COR.ferro, 0, 1.55, -1.4);
-    bloco(g, 4.6, 0.22, 0.06, COR.ambar, 0, 2.5, -1.31, 0.9);
-    for (const sx of [-1.3, 0, 1.3]) {
-      bloco(g, 0.62, 0.42, 0.62, COR.lona, sx, 0.52, 0.1);
-      bloco(g, 0.62, 0.7, 0.12, COR.lona, sx, 0.95, -0.2);
-    }
-    cil(g, 0.36, 0.5, COR.madeira, 0.65, 0.55, 0.85);
-    luz(g, 0xffb060, 14, 0, 2.6, 1.4, 10);
-  }
-
-  /* ── estúdio de podcast ── */
-  {
-    const g = espaco("podcast", 9.6, -3.4);
-    bloco(g, 3.7, 0.2, 3.3, COR.madeiraEscura, 0, 0.1, 0);
-    bloco(g, 3.5, 2.4, 3.1, 0x9fd0ff, 0, 1.4, 0, 0, 0.16);
-    bloco(g, 3.8, 0.16, 3.4, COR.ferro, 0, 2.7, 0);
-    for (const sx of [-1.75, 1.75]) for (const sz of [-1.55, 1.55]) bloco(g, 0.12, 2.5, 0.12, COR.ferro, sx, 1.45, sz);
-    cil(g, 0.85, 0.12, COR.madeira, 0, 0.95, 0);
-    cil(g, 0.12, 0.85, COR.ferro, 0, 0.5, 0);
-    for (const sx of [-0.5, 0.5]) {
-      cil(g, 0.03, 0.45, COR.aco, sx, 1.22, 0);
-      add(g, esfG, mat(COR.ferro), sx, 1.5, 0, 0.11, 0.14, 0.11);
-    }
-    bloco(g, 1.3, 0.36, 0.08, COR.vermelho, 0, 3.0, 1.6, 1.8);
-    luz(g, 0xff5a4a, 10, 0, 2.2, 0, 9);
-  }
-
-  /* ── estandes: churrasco (laranja) e economia solidária (azul e amarelo) ── */
-  const tendaG = new THREE.ConeGeometry(1.42, 0.95, 4);
-  const estande = (x: number, z: number, corTeto: number, corFaixa: number) => {
-    const g = espaco(null, x, z);
-    bloco(g, 1.7, 0.85, 0.7, COR.madeira, 0, 0.43, 0.55);
-    bloco(g, 1.7, 0.12, 0.72, corFaixa, 0, 0.92, 0.55);
-    for (const sx of [-0.9, 0.9]) for (const sz of [-0.9, 0.9]) bloco(g, 0.07, 2, 0.07, COR.ferro, sx, 1, sz);
-    const teto = add(g, tendaG, mat(corTeto), 0, 2.45, 0, 1, 1, 1);
-    teto.rotation.y = Math.PI / 4;
-    bloco(g, 1.95, 0.16, 1.95, corFaixa, 0, 2.02, 0);
-    return g;
+    halos.set(id, [...(halos.get(id) ?? []), h]);
   };
-  for (let k = 0; k < 5; k++) {
-    const t = 0.7 + k * 0.19;
-    const [x, z] = arco(-t);
-    const a = estande(x, z, k % 2 ? COR.lona : COR.brasa, k % 2 ? COR.brasa : COR.lona);
-    a.userData.zona = "churrasco";
-    const [x2, z2] = arco(t);
-    const b = estande(x2, z2, k % 2 ? COR.amarelo : COR.azul, k % 2 ? COR.azul : COR.amarelo);
-    b.userData.zona = "solidaria";
-  }
-  luz(cena, 0xffb060, 16, arco(-1.08)[0] * 0.8, 3, arco(-1.08)[1] * 0.8, 11);
-  luz(cena, 0xffe9a0, 16, arco(1.08)[0] * 0.8, 3, arco(1.08)[1] * 0.8, 11);
+  for (const z of ZONAS) if (z.halo) halo(z.id, z.x, z.z, z.halo);
+  halo("bares", P(6.5, 34).x, P(6.5, 34).z, 3.1); // o segundo bar
 
-  /* ── praça de alimentação: a parrilla no centro ── */
-  const brasaLuz = (() => {
-    const g = espaco("praca", 0, 0);
-    cil(g, 1.55, 0.85, 0x3b2a22, 0, 0.43, 0);
-    cil(g, 1.36, 0.06, COR.brasa, 0, 0.88, 0, 2.2);
-    for (let i = -2; i <= 2; i++) bloco(g, 2.6, 0.04, 0.05, COR.ferro, 0, 1.02, i * 0.42);
-    for (const [sx, sz] of [[-0.5, -0.2], [0.35, 0.3], [0.1, -0.55]]) bloco(g, 0.6, 0.16, 0.36, 0x8a3324, sx, 1.12, sz);
-    for (let i = 0; i < 6; i++) {
-      const a = (i / 6) * Math.PI * 2 + 0.5;
-      const mx = Math.sin(a) * 3.9;
-      const mz = Math.cos(a) * 3.9;
-      cil(g, 0.62, 0.08, COR.madeira, mx, 0.78, mz);
-      cil(g, 0.08, 0.76, COR.ferro, mx, 0.38, mz);
-      for (let j = 0; j < 3; j++) {
-        const b = a + (j / 3) * Math.PI * 2;
-        cil(g, 0.19, 0.42, COR.madeiraEscura, mx + Math.sin(b) * 0.95, 0.21, mz + Math.cos(b) * 0.95);
+  /* ── backstage: dois apoios, camarim e cozinha (4 × 4 cada), acesso restrito ── */
+  [9, 13, 17, 21].forEach((x) => {
+    const g = grupo(x, 2, "+z", 4, 4);
+    bloco(g, 3.86, 2.8, 3.86, COR.apoio, 0, 1.4, 0);
+    bloco(g, 3.96, 0.14, 3.96, COR.ferro, 0, 2.87, 0);
+  });
+
+  /* ── palco 8 × 6 m (aulas-show e painéis) e a plateia de 54 lugares ── */
+  {
+    const g = grupo(14.9, 8.5, "+z", 8, 6, "palco");
+    bloco(g, 8, 0.7, 6, 0x3a2a22, 0, 0.35, 0);
+    bloco(g, 8, 4.2, 0.2, COR.ferro, 0, 2.8, -2.9);
+    bloco(g, 5.6, 1.3, 0.06, COR.brasa, 0, 3.6, -2.78, 0.9);
+    bloco(g, 8.5, 0.26, 6.4, COR.ferro, 0, 5.1, 0);
+    for (const sx of [-3.85, 3.85]) for (const sz of [-2.8, 2.8]) bloco(g, 0.2, 4.6, 0.2, COR.ferro, sx, 2.9, sz);
+    bloco(g, 3.4, 0.9, 0.9, COR.aco, -0.8, 1.15, 1.2);
+    bloco(g, 1.2, 0.75, 0.8, COR.ferro, 2.4, 1.08, 1.2);
+    bloco(g, 1.05, 0.06, 0.65, COR.brasa, 2.4, 1.48, 1.2, 1.6);
+    luz(g, 0xff8a2a, 40, 0, 4, 2);
+
+    ocupado.push([10.9, 13, 20, 19.9]);
+    const cadeiras = new THREE.InstancedMesh(caixaG, mat(COR.lona), 54);
+    const m4 = new THREE.Matrix4();
+    for (let f = 0; f < 6; f++)
+      for (let c = 0; c < 9; c++) {
+        const p = P(11.5 + c * 1, 13.7 + f * 1.05);
+        m4.makeScale(0.5, 0.5, 0.5).setPosition(p.x, 0.3, p.z);
+        cadeiras.setMatrixAt(f * 9 + c, m4);
       }
+    cadeiras.userData.zona = "palco";
+    cena.add(cadeiras);
+  }
+
+  /* ── camarote (tablado elevado e aberto, ao lado do backstage) ── */
+  {
+    const g = grupo(26.65, 6.75, "+z", 6.5, 4.5);
+    bloco(g, 6.5, 0.6, 4.5, COR.madeiraEscura, 0, 0.3, 0);
+    bloco(g, 6.5, 0.1, 0.1, COR.roxo, 0, 1.6, 2.2, 0.5);
+    bloco(g, 6.5, 0.1, 0.1, COR.roxo, 0, 1.6, -2.2, 0.5);
+    bloco(g, 0.1, 0.1, 4.5, COR.roxo, -3.2, 1.6, 0, 0.5);
+    for (const sx of [-3.2, -1.6, 0, 1.6, 3.2]) bloco(g, 0.08, 1, 0.08, COR.ferro, sx, 1.1, 2.2);
+    for (const sx of [-1.6, 1.4]) {
+      cil(g, 0.45, 0.06, COR.madeira, sx, 1.7, 0);
+      cil(g, 0.06, 1.1, COR.ferro, sx, 1.15, 0);
     }
-    return luz(g, 0xff7a1a, 46, 0, 1.9, 0, 15);
+  }
+
+  /* ── arena do fogo de chão (6,5 × 5 m): gradil, fogueira e as carnes em volta ── */
+  const fogo = P(24.65, 13);
+  const brasaLuz = (() => {
+    const g = grupo(24.65, 13, "+z", 6.5, 5, "arena");
+    for (const y of [0.55, 1]) {
+      bloco(g, 6.5, 0.07, 0.07, COR.ferro, 0, y, 2.5);
+      bloco(g, 6.5, 0.07, 0.07, COR.ferro, 0, y, -2.5);
+      bloco(g, 0.07, 0.07, 5, COR.ferro, 3.25, y, 0);
+      bloco(g, 0.07, 0.07, 5, COR.ferro, -3.25, y, 0);
+    }
+    for (const sx of [-3.25, -1.6, 0, 1.6, 3.25]) for (const sz of [-2.5, 2.5]) bloco(g, 0.09, 1.05, 0.09, COR.ferro, sx, 0.52, sz);
+    cil(g, 1.25, 0.28, 0x3b2a22, 0, 0.14, 0);
+    cil(g, 1.05, 0.06, COR.brasa, 0, 0.31, 0, 2.4);
+    for (let i = 0; i < 3; i++) {
+      const t = bloco(g, 1.5, 0.2, 0.22, 0x2a1a12, 0, 0.42, 0);
+      t.rotation.y = (i * Math.PI) / 3;
+    }
+    for (let i = 0; i < 7; i++) {
+      const a = (i / 7) * Math.PI * 2 + 0.3;
+      const e = new THREE.Group();
+      e.position.set(Math.sin(a) * 1.75, 0, Math.cos(a) * 1.75);
+      e.rotation.y = a;
+      g.add(e);
+      const estaca = bloco(e, 0.06, 1.9, 0.06, COR.aco, 0, 0.9, -0.2);
+      estaca.rotation.x = -0.32;
+      const carne = bloco(e, 0.5, 0.8, 0.14, 0x8a3324, 0, 1.2, -0.32);
+      carne.rotation.x = -0.32;
+    }
+    return luz(g, 0xff7a1a, 50, 0, 1.8, 0, 16);
   })();
 
-  /* ── shows locais + DJ ── */
-  const feixes: THREE.Mesh[] = [];
-  {
-    const g = espaco("shows", 0, 10.2);
-    bloco(g, 8.2, 0.7, 4.2, COR.madeiraEscura, 0, 0.35, 0);
-    for (const sx of [-3.9, 3.9]) bloco(g, 0.3, 5, 0.3, COR.ferro, sx, 3.2, -1.7);
-    bloco(g, 8.1, 0.3, 0.3, COR.ferro, 0, 5.6, -1.7);
-    bloco(g, 7.6, 3.6, 0.12, 0x2a201a, 0, 3.0, -1.85);
-    bloco(g, 5.6, 0.9, 0.06, COR.brasa, 0, 3.9, -1.76, 0.9);
-    for (const sx of [-3.3, 3.3]) {
-      bloco(g, 1.05, 1.2, 1, COR.ferro, sx, 1.3, 0.9);
-      bloco(g, 1.05, 1.1, 1, 0x34302c, sx, 2.45, 0.9);
-      cil(g, 0.34, 0.06, 0x111111, sx, 1.3, 1.43).rotation.x = Math.PI / 2;
+  /* ── estandes: frente × fundo em metros, teto em pirâmide ── */
+  const estande = (cx: number, cy: number, lado: Lado, fr: number, fu: number, corTeto: number, corFaixa: number, zona: string) => {
+    const g = grupo(cx, cy, lado, fr, fu, zona);
+    bloco(g, fr * 0.94, 2.1, 0.06, COR.lona, 0, 1.05, -fu / 2 + 0.06);
+    bloco(g, fr * 0.9, 0.9, 0.5, COR.madeira, 0, 0.45, fu / 2 - 0.34);
+    bloco(g, fr * 0.9, 0.1, 0.52, corFaixa, 0, 0.95, fu / 2 - 0.34);
+    bloco(g, fr * 0.98, 0.2, fu * 0.98, corFaixa, 0, 2.25, 0);
+    add(g, tetoG, mat(corTeto), 0, 2.75, 0, fr * 1.02, 0.8, fu * 1.02);
+    return g;
+  };
+  /* setor churrasco: 15 expositores (C1 a C13, mais os dois duplos C14 e C15) */
+  let n = 0;
+  const churras = (cx: number, cy: number, lado: Lado, fr = 3, fu = 2) => {
+    const par = n++ % 2 === 0;
+    estande(cx, cy, lado, fr, fu, par ? COR.brasa : COR.lona, par ? COR.lona : COR.brasa, "churrasco");
+  };
+  for (let k = 0; k < 5; k++) churras(1, 1.5 + k * 3, "+x");
+  for (const y0 of [5, 12.5])
+    for (const dy of [1.5, 4.5]) {
+      churras(6, y0 + dy, "-x");
+      churras(8, y0 + dy, "+x");
     }
-    bloco(g, 2.4, 1, 0.9, COR.ferro, 0, 1.2, 0.3);
-    bloco(g, 2.4, 0.16, 0.06, COR.ambar, 0, 1.35, 0.77, 1.8);
-    const feixeG = new THREE.ConeGeometry(1.5, 6.4, 20, 1, true);
-    feixeG.translate(0, -3.2, 0);
-    [-2.6, 0, 2.6].forEach((sx, i) => {
-      const f = new THREE.Mesh(feixeG, new THREE.MeshBasicMaterial({ color: i === 1 ? COR.ambar : COR.brasa, transparent: true, opacity: 0.13, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }));
-      f.position.set(sx, 5.5, -1.6);
-      g.add(f);
-      feixes.push(f);
-    });
-    luz(g, 0xffa040, 30, 0, 3.6, 1.6);
+  churras(13.5, 22.9, "-z", 6, 2);
+  churras(13.5, 25, "+z", 6, 2);
+  luz(cena, 0xffb060, 22, P(4, 9).x, 3.6, P(4, 9).z, 14);
+
+  /* economia solidária: 15 expositores (E1 a E6 na parede, duas ilhas de quatro e o E15 na entrada) */
+  n = 0;
+  const solid = (cx: number, cy: number, lado: Lado, fr = 3, fu = 2) => {
+    const par = n++ % 2 === 0;
+    estande(cx, cy, lado, fr, fu, par ? COR.azul : COR.amarelo, par ? COR.amarelo : COR.azul, "solidaria");
+  };
+  for (let k = 0; k < 6; k++) solid(29, 21.5 + k * 3, "-x");
+  for (const y0 of [22.4, 28.4]) {
+    for (const x of [20.9, 23.9]) {
+      solid(x, y0 + 1, "-z");
+      solid(x, y0 + 3.1, "+z");
+    }
+  }
+  solid(26.4, 39, "-x", 2, 2.8);
+  luz(cena, 0xffe9a0, 22, P(26.4, 27).x, 3.6, P(26.4, 27).z, 14);
+
+  /* ── praça de alimentação: cinco pontos de 3 × 3 que assam na hora e dez mesas ── */
+  for (let k = 0; k < 5; k++) {
+    const g = grupo(1.5, 22.5 + k * 3, "+x", 3, 3, "praca");
+    bloco(g, 2.9, 2.5, 0.08, COR.lona, 0, 1.25, -1.42);
+    bloco(g, 0.08, 2.5, 2.9, COR.lona, -1.42, 1.25, 0);
+    bloco(g, 0.08, 2.5, 2.9, COR.lona, 1.42, 1.25, 0);
+    bloco(g, 3, 0.4, 0.12, COR.brasa, 0, 2.5, 1.44);
+    bloco(g, 3, 0.1, 3, COR.lona, 0, 2.72, 0);
+    bloco(g, 1.7, 0.8, 0.7, COR.ferro, 0.2, 0.4, 0.9);
+    bloco(g, 1.55, 0.06, 0.55, COR.brasa, 0.2, 0.83, 0.9, 1.8);
+  }
+  const mesa = (cx: number, cy: number) => {
+    const g = grupo(cx, cy, "+z", 1.9, 1.9, "praca");
+    bloco(g, 1, 0.08, 1, COR.madeira, 0, 0.76, 0);
+    cil(g, 0.07, 0.74, COR.ferro, 0, 0.37, 0);
+    for (const [sx, sz] of [[0.78, 0], [-0.78, 0], [0, 0.78], [0, -0.78]]) cil(g, 0.19, 0.44, COR.madeiraEscura, sx, 0.22, sz);
+  };
+  for (const y of [22.6, 24.9, 27.2, 29.5]) for (const x of [4.9, 7.3]) mesa(x, y);
+  mesa(1.4, 38.3);
+  mesa(3.7, 38.3);
+  luz(cena, 0xff8a3a, 26, P(5, 26).x, 3.6, P(5, 26).z, 14);
+
+  /* ── dois bares de 4 × 4 m, com balcão em volta e torre central ── */
+  for (const [cx, cy] of [
+    [6.5, 34],
+    [24.4, 19],
+  ]) {
+    const g = grupo(cx, cy, "+z", 4, 4, "bares");
+    for (const s of [-1, 1]) {
+      bloco(g, 4, 1.05, 0.5, COR.madeira, 0, 0.52, s * 1.75);
+      bloco(g, 0.5, 1.05, 3, COR.madeira, s * 1.75, 0.52, 0);
+      bloco(g, 4.1, 0.08, 0.6, COR.amarelo, 0, 1.08, s * 1.75);
+      bloco(g, 0.6, 0.08, 3.1, COR.amarelo, s * 1.75, 1.08, 0);
+    }
+    bloco(g, 1.3, 2.9, 1.3, COR.ferro, 0, 1.45, 0);
+    bloco(g, 1.36, 0.3, 1.36, COR.ambar, 0, 2.45, 0, 1.7);
+    bloco(g, 4.2, 0.16, 4.2, COR.ferro, 0, 3, 0);
+    for (const sx of [-2, 2]) for (const sz of [-2, 2]) bloco(g, 0.1, 3, 0.1, COR.ferro, sx, 1.5, sz);
   }
 
-  /* ── árvores na borda ── */
+  /* ── espaço instagramável: cenografia de 5 × 2 m, com área livre na frente para as fotos ── */
+  {
+    const g = grupo(14, 29.4, "+z", 5, 2, "insta");
+    bloco(g, 5, 3.4, 0.4, 0x241812, 0, 1.7, -0.5);
+    bloco(g, 4.4, 0.14, 0.08, COR.brasa, 0, 3, -0.28, 2.2);
+    bloco(g, 4.4, 0.14, 0.08, COR.brasa, 0, 0.5, -0.28, 2.2);
+    bloco(g, 0.14, 2.5, 0.08, COR.brasa, -2.2, 1.75, -0.28, 2.2);
+    bloco(g, 0.14, 2.5, 0.08, COR.brasa, 2.2, 1.75, -0.28, 2.2);
+    const aro = new THREE.Mesh(new THREE.TorusGeometry(0.85, 0.07, 8, 32), mat(COR.ambar, 2.4));
+    aro.position.set(0, 1.75, -0.26);
+    g.add(aro);
+    luz(g, 0xff9a3a, 20, 0, 2, 2, 10);
+  }
+
+  /* ── podcast: aquário de vidro de 4 × 4 m, visível de quem entra ── */
+  {
+    const g = grupo(22.4, 36, "+z", 4, 4, "podcast");
+    bloco(g, 4, 0.2, 4, COR.madeiraEscura, 0, 0.1, 0);
+    bloco(g, 3.8, 2.5, 3.8, 0x9fd0ff, 0, 1.45, 0, 0, 0.16);
+    bloco(g, 4.1, 0.16, 4.1, COR.ferro, 0, 2.78, 0);
+    for (const sx of [-1.95, 1.95]) for (const sz of [-1.95, 1.95]) bloco(g, 0.12, 2.6, 0.12, COR.ferro, sx, 1.5, sz);
+    cil(g, 0.9, 0.12, COR.madeira, 0, 0.98, 0);
+    cil(g, 0.12, 0.86, COR.ferro, 0, 0.53, 0);
+    for (const sx of [-0.55, 0.55]) {
+      cil(g, 0.03, 0.45, COR.aco, sx, 1.26, 0);
+      add(g, esfG, mat(COR.ferro), sx, 1.54, 0, 0.11, 0.14, 0.11);
+      cil(g, 0.24, 0.5, COR.madeiraEscura, sx * 2.4, 0.45, 0);
+    }
+    bloco(g, 1.4, 0.36, 0.08, COR.vermelho, 0, 3.1, 2, 1.8);
+    luz(g, 0xff5a4a, 12, 0, 2.2, 0, 9);
+  }
+
+  /* ── entrada de 20 m: pórtico cenográfico colado na tenda e o credenciamento ao lado ── */
+  {
+    const g = grupo(15, 40.7, "+z", 16, 1.2, "entrada");
+    for (const sx of [-7.5, 7.5]) bloco(g, 1.1, 6, 1, 0x2a1d15, sx, 3, 0);
+    bloco(g, 16.1, 1.7, 1, 0x2a1d15, 0, 6.3, 0);
+    bloco(g, 11, 0.9, 0.08, COR.brasa, 0, 6.3, 0.54, 1.6);
+    bloco(g, 0.16, 5, 0.08, COR.ambar, -6.9, 2.8, 0.54, 1.4);
+    bloco(g, 0.16, 5, 0.08, COR.ambar, 6.9, 2.8, 0.54, 1.4);
+    luz(g, 0xff8a2a, 30, 0, 4, 3, 16);
+    const c = grupo(25.4, 41, "+z", 4, 1.6, "entrada");
+    bloco(c, 4, 1.05, 1.2, COR.roxo, 0, 0.52, 0);
+    bloco(c, 4.2, 0.14, 1.6, COR.lona, 0, 2.5, 0);
+    for (const sx of [-1.95, 1.95]) bloco(c, 0.08, 2.5, 0.08, COR.ferro, sx, 1.25, 0.6);
+  }
+
+  /* ── banheiros (contêineres) do lado de fora, à esquerda ── */
+  for (const y of [25, 33]) {
+    const g = grupo(-4.4, y, "+x", 6, 3);
+    bloco(g, 6, 2.6, 2.9, COR.cinza, 0, 1.3, 0);
+    bloco(g, 6.1, 0.12, 3, COR.ferro, 0, 2.66, 0);
+    bloco(g, 0.9, 1.9, 0.06, COR.lona, -1.4, 0.95, 1.47);
+    bloco(g, 0.9, 1.9, 0.06, COR.lona, 1.4, 0.95, 1.47);
+  }
+
+  /* ── estacionamento na frente: alguns carros, para situar a entrada ── */
+  [
+    [4, 47.5, 0x8a2f24],
+    [9.5, 48.2, 0xd9d2c8],
+    [20, 47.8, 0x3b556b],
+    [25.5, 48.4, 0x2f2a27],
+    [31, 47.6, 0xb5863a],
+  ].forEach(([x, y, cor]) => {
+    const p = P(x, y);
+    bloco(cena, 1.9, 0.75, 4.2, cor, p.x, 0.6, p.z);
+    bloco(cena, 1.7, 0.6, 2.2, 0x1c1c1c, p.x, 1.25, p.z + 0.2);
+  });
+
+  /* ── árvores nas bordas do terreno ── */
   const copaG = new THREE.ConeGeometry(1, 1, 7);
-  for (let i = 0; i < 12; i++) {
-    const a = (i / 12) * Math.PI * 2 + 0.26;
-    if (Math.abs(Math.sin(a)) < 0.32) continue;
-    const x = Math.sin(a) * 14.2;
-    const z = Math.cos(a) * 14.2;
-    const h = 1.5 + ((i * 7) % 5) * 0.16;
-    cil(cena, 0.14, 1, COR.madeiraEscura, x, 0.5, z);
-    add(cena, copaG, mat(COR.verde), x, 1 + h * 0.6, z, 1.05, h * 1.2, 1.05);
-    add(cena, copaG, mat(0x2f5637), x, 1.5 + h, z, 0.75, h * 0.9, 0.75);
-  }
+  [
+    [-7, -3], [-8, 8], [-8, 18], [-7.5, 39], [4, -4], [15, -4.5], [27, -4],
+    [37.5, -2], [38, 9], [37.5, 20], [38, 30], [37, 41], [-7, 47], [37, 49],
+  ].forEach(([x, y], i) => {
+    const p = P(x, y);
+    const h = 2.2 + ((i * 7) % 5) * 0.24;
+    cil(cena, 0.2, 1.4, COR.madeiraEscura, p.x, 0.7, p.z);
+    add(cena, copaG, mat(COR.verde), p.x, 1.4 + h * 0.6, p.z, 1.5, h * 1.2, 1.5);
+    add(cena, copaG, mat(0x2f5637), p.x, 2.1 + h, p.z, 1.05, h * 0.9, 1.05);
+  });
 
-  /* ── público: bonequinhos espalhados, para dar escala e vida ── */
+  /* ── público: bonequinhos nos corredores (e alguns chegando), para dar escala e vida ── */
   {
     let s = 7;
     const rnd = () => ((s = (s * 16807) % 2147483647) - 1) / 2147483646;
     const cores = [0xd9c7b0, 0xb5532a, 0x3b556b, 0xe0a04a, 0x6b4a8a, 0x2f2a27, 0xa33b2e];
     const pontos: [number, number, number][] = [];
-    while (pontos.length < 54) {
-      const a = rnd() * Math.PI * 2;
-      const r = 2.6 + rnd() * 9.6;
-      const x = Math.sin(a) * r;
-      const z = Math.cos(a) * r;
-      if (ZONAS.some((zn) => zn.id !== "praca" && Math.hypot(zn.x - x, zn.z - z) < 3.1)) continue;
-      if (r > 4.6 || r < 3.1) pontos.push([x, z, 0.9 + rnd() * 0.22]);
+    let tentativas = 0;
+    while (pontos.length < 96 && tentativas++ < 4000) {
+      const fora = pontos.length >= 84;
+      const x = fora ? 6 + rnd() * 18 : 0.7 + rnd() * 28.6;
+      const y = fora ? 42 + rnd() * 3.6 : 4.6 + rnd() * 35;
+      if (ocupado.some(([x0, y0, x1, y1]) => x > x0 - 0.45 && x < x1 + 0.45 && y > y0 - 0.45 && y < y1 + 0.45)) continue;
+      pontos.push([x, y, 0.92 + rnd() * 0.2]);
     }
-    const corpos = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.15, 0.21, 0.72, 8), new THREE.MeshStandardMaterial({ roughness: 0.9, flatShading: true }), pontos.length);
-    const cabecas = new THREE.InstancedMesh(new THREE.SphereGeometry(0.15, 8, 6), new THREE.MeshStandardMaterial({ color: 0xc99a76, roughness: 0.9, flatShading: true }), pontos.length);
+    const corpos = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.19, 0.27, 0.92, 8), new THREE.MeshStandardMaterial({ roughness: 0.9, flatShading: true }), pontos.length);
+    const cabecas = new THREE.InstancedMesh(new THREE.SphereGeometry(0.19, 8, 6), new THREE.MeshStandardMaterial({ color: 0xc99a76, roughness: 0.9, flatShading: true }), pontos.length);
     const m4 = new THREE.Matrix4();
     const cor = new THREE.Color();
-    pontos.forEach(([x, z, e], i) => {
-      m4.makeScale(e, e, e).setPosition(x, 0.38 * e, z);
+    pontos.forEach(([x, y, e], i) => {
+      const p = P(x, y);
+      m4.makeScale(e, e, e).setPosition(p.x, 0.5 * e, p.z);
       corpos.setMatrixAt(i, m4);
       corpos.setColorAt(i, cor.setHex(cores[i % cores.length]));
-      m4.makeScale(e, e, e).setPosition(x, 0.9 * e, z);
+      m4.makeScale(e, e, e).setPosition(p.x, 1.16 * e, p.z);
       cabecas.setMatrixAt(i, m4);
     });
     cena.add(corpos, cabecas);
   }
 
-  /* ── faíscas subindo da parrilla ── */
+  /* ── faíscas subindo da fogueira da arena ── */
   const NF = 46;
   const fPos = new Float32Array(NF * 3);
   const fVel = new Float32Array(NF);
   const fVida = new Float32Array(NF);
   const nasce = (i: number, cedo = false) => {
     const a = Math.random() * Math.PI * 2;
-    const r = Math.random() * 1.1;
-    fPos[i * 3] = Math.sin(a) * r;
-    fPos[i * 3 + 1] = 1 + (cedo ? Math.random() * 3 : 0);
-    fPos[i * 3 + 2] = Math.cos(a) * r;
-    fVel[i] = 0.9 + Math.random() * 1.6;
-    fVida[i] = 3.2 + Math.random() * 1.6;
+    const r = Math.random() * 0.9;
+    fPos[i * 3] = fogo.x + Math.sin(a) * r;
+    fPos[i * 3 + 1] = 0.5 + (cedo ? Math.random() * 3.4 : 0);
+    fPos[i * 3 + 2] = fogo.z + Math.cos(a) * r;
+    fVel[i] = 1 + Math.random() * 1.8;
+    fVida[i] = 3.4 + Math.random() * 1.8;
   };
   for (let i = 0; i < NF; i++) nasce(i, true);
   const fGeo = new THREE.BufferGeometry();
   fGeo.setAttribute("position", new THREE.BufferAttribute(fPos, 3));
-  const faiscas = new THREE.Points(fGeo, new THREE.PointsMaterial({ color: 0xffb04a, size: 0.17, transparent: true, opacity: 0.95, blending: THREE.AdditiveBlending, depthWrite: false }));
+  const faiscas = new THREE.Points(fGeo, new THREE.PointsMaterial({ color: 0xffb04a, size: 0.24, transparent: true, opacity: 0.95, blending: THREE.AdditiveBlending, depthWrite: false }));
   cena.add(faiscas);
 
   /* ── câmera ── */
   let retrato = false;
-  const geral = () => ({ az: 0.55, pol: 0.98, raio: retrato ? 58 : 39, alvo: new THREE.Vector3(0, 1.2, 0) });
-  const c = { az: -0.7, pol: 0.3, raio: 80, alvo: new THREE.Vector3(0, 1.2, 0) };
+  const geral = () => ({ az: 0.5, pol: 0.94, raio: retrato ? 100 : 60, alvo: new THREE.Vector3(0, 1.5, 1.5) });
+  const c = { az: -0.6, pol: 0.3, raio: 170, alvo: new THREE.Vector3(0, 1.5, 2.5) };
   let t = geral();
   let foco: string | null = null;
   let arrastando = false;
@@ -336,7 +489,7 @@ export function criarCena(opts: {
 
   const focar = (id: string | null) => {
     foco = id;
-    for (const [k, h] of halos) (h.material as THREE.MeshBasicMaterial).opacity = k === id ? 0.95 : 0.18;
+    for (const [k, hs] of halos) for (const h of hs) (h.material as THREE.MeshBasicMaterial).opacity = k === id ? 0.95 : 0.2;
     const z = ZONAS.find((q) => q.id === id);
     if (!z) {
       const g = geral();
@@ -344,10 +497,8 @@ export function criarCena(opts: {
       t = g;
       return;
     }
-    const centro = z.x === 0 && z.z === 0;
-    let az = centro ? c.az : Math.atan2(-z.x, -z.z) + 0.42;
-    az += Math.round((c.az - az) / (Math.PI * 2)) * Math.PI * 2;
-    t = { az, pol: 1.13, raio: (retrato ? 21 : 16.5) + (z.id === "shows" || z.id === "palco" ? 2.5 : 0), alvo: new THREE.Vector3(z.x * 0.94, 1.5, z.z * 0.94) };
+    const az = z.az + Math.round((c.az - z.az) / (Math.PI * 2)) * Math.PI * 2;
+    t = { az, pol: 0.9, raio: z.raio * (retrato ? 1.42 : 1), alvo: new THREE.Vector3(z.x, 1.6, z.z) };
   };
 
   /* ── arrastar para girar; toque simples escolhe o espaço ── */
@@ -420,7 +571,7 @@ export function criarCena(opts: {
     const seg = agora / 1000;
 
     parado += dt;
-    if (!foco && !arrastando && !calmo && parado > 1.2) t.az += dt * 0.085;
+    if (!foco && !arrastando && !calmo && parado > 1.2) t.az += dt * 0.07;
     const k = 1 - Math.exp(-dt * (arrastando ? 14 : 3));
     c.az += (t.az - c.az) * k;
     c.pol += (t.pol - c.pol) * k;
@@ -430,11 +581,7 @@ export function criarCena(opts: {
     camera.lookAt(c.alvo);
 
     if (!calmo) {
-      brasaLuz.intensity = 42 + Math.sin(seg * 9) * 5 + Math.sin(seg * 23) * 3;
-      feixes.forEach((f, i) => {
-        f.rotation.z = Math.sin(seg * 0.8 + i * 2.1) * 0.5;
-        f.rotation.x = 0.25 + Math.sin(seg * 0.6 + i) * 0.2;
-      });
+      brasaLuz.intensity = 46 + Math.sin(seg * 9) * 6 + Math.sin(seg * 23) * 4;
       for (let i = 0; i < NF; i++) {
         fPos[i * 3 + 1] += fVel[i] * dt;
         fPos[i * 3] += Math.sin(seg * 2 + i) * dt * 0.25;
@@ -442,7 +589,7 @@ export function criarCena(opts: {
       }
       fGeo.attributes.position.needsUpdate = true;
       const pulso = 0.75 + Math.sin(seg * 3.2) * 0.2;
-      if (foco) (halos.get(foco)!.material as THREE.MeshBasicMaterial).opacity = pulso;
+      if (foco) for (const h of halos.get(foco) ?? []) (h.material as THREE.MeshBasicMaterial).opacity = pulso;
     }
 
     renderer.render(cena, camera);

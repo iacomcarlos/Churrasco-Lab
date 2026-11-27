@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { CalendarDays, MapPin, Navigation, Share2, Ticket } from "lucide-react";
-import { evento, links } from "@/config/evento";
+import { dias, evento, links } from "@/config/evento";
 import { TituloSecao } from "@/components/Pecas";
 import { LogoAnimada } from "@/components/LogoAnimada";
 import { useRevelar } from "@/lib/revelar";
@@ -43,6 +43,16 @@ export function Local({ mapa3d = false }: { mapa3d?: boolean }) {
           {evento.entrada}
         </li>
       </ul>
+      <p data-rev className="mt-4 text-center text-[14.5px] leading-[1.6] text-suave">
+        {dias.map((d) => (
+          <span key={d.id} className="mx-2 inline-block whitespace-nowrap">
+            <strong className="font-bold text-texto">
+              {d.semana}, {d.diaMes}:
+            </strong>{" "}
+            {d.horario}
+          </span>
+        ))}
+      </p>
 
       {/* mapa: só carrega quando a pessoa pede (página leve) */}
       <div data-rev className={`cartao relative mx-auto mt-8 overflow-hidden ${em3d ? "aspect-[4/4.6] max-w-[1040px] sm:aspect-[16/9]" : "aspect-[4/3] max-w-[720px] sm:aspect-[16/9]"}`}>
@@ -104,25 +114,28 @@ export function Rodape() {
       <div className="mx-auto flex max-w-[900px] flex-col items-center px-5">
         <LogoAnimada className="w-[210px] sm:w-[240px]" />
         <p className="titulo mt-2 text-[clamp(24px,7vw,32px)]">
-          27 e 28 <span className="text-ambar">de novembro</span>
+          {evento.diasNumeros} <span className="text-ambar">{evento.mesTexto}</span>
         </p>
         <p className="mt-2 text-[15.5px] font-semibold text-suave">
           {evento.local.nome} · {evento.local.bairro}
         </p>
         <p className="espacado mt-2 text-[12.5px] font-semibold text-ambar">{evento.entrada}</p>
 
-        {/* régua de marcas oficial (enviada pela organização em 21/11/2026): realização à esquerda, parceria à direita */}
+        {/* régua de marcas oficial (enviada pela organização em 21/11/2026): a ordem foi invertida a pedido da organização em 27/11/2026: apoio, parceria e realização */}
         <div className="mt-[250px] flex w-full max-w-[640px] flex-col items-center justify-center gap-x-4 gap-y-1 rounded-[20px] bg-[#f4ece2] px-4 py-2 shadow-[0_18px_50px_-18px_rgb(0_0_0/0.8)] min-[820px]:max-w-[860px] min-[820px]:flex-row sm:mt-[110px]">
-          <img src="/brand/regua-realizacao.png" width={420} height={252} loading="lazy" alt={`Realização: ${evento.realizacao.sigla}, ${evento.realizacao.nome}`} className="h-auto w-full max-w-[210px]" />
-          <span aria-hidden className="h-px w-4/5 bg-tinta/20 min-[820px]:h-16 min-[820px]:w-px" />
-          <img src="/brand/regua-parceria.png" width={690} height={226} loading="lazy" alt={`Parceria: ${evento.parceria.nome}, ${evento.parceria.governo}`} className="h-auto w-full max-w-[330px]" />
-          <span aria-hidden className="h-px w-4/5 bg-tinta/20 min-[820px]:h-16 min-[820px]:w-px" />
           <div className="flex shrink-0 flex-col items-center py-2">
             <p className="text-[10.5px] font-bold tracking-[0.2em] text-[#14100e] uppercase">{evento.apoio.titulo}</p>
             <img src="/brand/economia-solidaria.png" width={1007} height={363} loading="lazy" alt={`${evento.apoio.titulo}: ${evento.apoio.nome}`} className="mt-2 h-auto w-[210px] max-w-full mix-blend-multiply" />
           </div>
+          <span aria-hidden className="h-px w-4/5 bg-tinta/20 min-[820px]:h-16 min-[820px]:w-px" />
+          <img src="/brand/regua-parceria.png" width={690} height={226} loading="lazy" alt={`Parceria: ${evento.parceria.nome}, ${evento.parceria.governo}`} className="h-auto w-full max-w-[330px]" />
+          <span aria-hidden className="h-px w-4/5 bg-tinta/20 min-[820px]:h-16 min-[820px]:w-px" />
+          <img src="/brand/regua-realizacao.png" width={420} height={252} loading="lazy" alt={`Realização: ${evento.realizacao.sigla}, ${evento.realizacao.nome}`} className="h-auto w-full max-w-[210px]" />
         </div>
-        <p className="pb-safe mt-5 pb-5 text-[12px] font-medium text-texto/80 [text-shadow:0_1px_8px_rgb(0_0_0/0.9)]">
+        <a href="/expositores" className="mt-5 text-[13.5px] font-bold text-texto underline underline-offset-4 [text-shadow:0_1px_8px_rgb(0_0_0/0.9)] hover:text-ambar">
+          Credenciamento de expositores
+        </a>
+        <p className="pb-safe mt-3 pb-5 text-[12px] font-medium text-texto/80 [text-shadow:0_1px_8px_rgb(0_0_0/0.9)]">
           © {evento.ano} {evento.nomeCurto}
         </p>
       </div>

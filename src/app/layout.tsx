@@ -20,10 +20,10 @@ export const metadata: Metadata = {
     title: tituloSite,
     description,
     siteName: evento.nome,
-    images: [{ url: "/og.jpg", width: 1200, height: 630, alt: tituloSite }],
+    images: [{ url: "/og.jpg?v=dez", width: 1200, height: 630, alt: tituloSite }],
     ...(SITE_URL ? { url: SITE_URL } : {}),
   },
-  twitter: { card: "summary_large_image", title: tituloSite, description, images: ["/og.jpg"] },
+  twitter: { card: "summary_large_image", title: tituloSite, description, images: ["/og.jpg?v=dez"] },
   icons: {
     icon: [
       { url: "/favicon-48.png", type: "image/png", sizes: "48x48" },

@@ -31,7 +31,10 @@ export function Topo() {
         >
           <LogoBranca className="h-[42px] w-auto" />
         </a>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <a href="/expositores" className="rounded-full px-1.5 py-2 text-[12.5px] font-bold whitespace-nowrap text-texto/90 underline-offset-4 [text-shadow:0_1px_8px_rgb(0_0_0/0.8)] hover:text-ambar hover:underline sm:px-3 sm:text-[14px]">
+            Expositores
+          </a>
           <Som />
           <a
             href={`#${chamada.id}`}
@@ -39,7 +42,7 @@ export function Topo() {
               e.preventDefault();
               irPara(chamada.id, "topo");
             }}
-            className="btn btn-brasa btn-sm !min-h-[42px]"
+            className="btn btn-brasa btn-sm !min-h-[42px] whitespace-nowrap max-sm:!px-3.5 max-sm:!text-[13px]"
           >
             {chamada.curto}
           </a>
@@ -154,8 +157,8 @@ export function Abertura() {
           <CalendarDays className="size-[clamp(50px,14vw,68px)] shrink-0 text-brasa" strokeWidth={1.5} aria-hidden />
           <span aria-hidden className="h-[clamp(58px,16vw,78px)] w-px bg-brasa/60" />
           <p className="text-left">
-            <span className="titulo block text-[clamp(50px,14.5vw,78px)] leading-[0.9]">27 e 28</span>
-            <span className="espacado mt-1.5 block text-[clamp(14px,4vw,20px)]">de novembro</span>
+            <span className="titulo block text-[clamp(50px,14.5vw,78px)] leading-[0.9]">{evento.diasNumeros}</span>
+            <span className="espacado mt-1.5 block text-[clamp(14px,4vw,20px)]">{evento.mesTexto}</span>
           </p>
         </div>
 
